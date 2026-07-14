@@ -15,10 +15,10 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Merch Co. — Premium Streetwear" },
-      { name: "description", content: "Shop the latest drops from Merch Co. Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
-      { property: "og:title", content: "Merch Co. — Premium Streetwear" },
-      { property: "og:description", content: "Shop the latest drops from Merch Co. Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
+      { title: "Motion Inclined — Premium Streetwear" },
+      { name: "description", content: "Shop the latest drops from Motion Inclined Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
+      { property: "og:title", content: "Motion Inclined — Premium Streetwear" },
+      { property: "og:description", content: "Shop the latest drops from Motion Inclined Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
     ],
   }),
   component: Index,
@@ -42,7 +42,7 @@ function Index() {
       <section className="border-t border-border/60 bg-secondary/30 py-16 lg:py-24" id="about">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight">About Merch Co.</h2>
+            <h2 className="text-3xl font-bold tracking-tight">About Motion Inclined</h2>
             <p className="mt-4 text-lg text-muted-foreground">
               We make clothing for people who care about quality, fit, and quiet confidence. Every piece is produced in limited runs so you’re not wearing what everyone else is.
             </p>

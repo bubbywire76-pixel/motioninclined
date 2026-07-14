@@ -80,11 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Merch Co. — Premium Streetwear" },
-      { name: "description", content: "Shop the latest drops from Merch Co. Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
-      { name: "author", content: "Merch Co." },
-      { property: "og:title", content: "Merch Co. — Premium Streetwear" },
-      { property: "og:description", content: "Shop the latest drops from Merch Co. Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
+      { title: "Motion Inclined — Premium Streetwear" },
+      { name: "description", content: "Shop the latest drops from Motion Inclined Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
+      { name: "author", content: "Motion Inclined" },
+      { property: "og:title", content: "Motion Inclined — Premium Streetwear" },
+      { property: "og:description", content: "Shop the latest drops from Motion Inclined Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@merchco" },
@@ -130,7 +130,7 @@ function RootComponent() {
         </main>
         <footer className="border-t border-border/60 bg-background py-10">
           <div className="mx-auto max-w-7xl px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
-            <p>&copy; {new Date().getFullYear()} Merch Co. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Motion Inclined All rights reserved.</p>
           </div>
         </footer>
       </div>
