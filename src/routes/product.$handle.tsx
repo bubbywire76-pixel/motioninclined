@@ -5,7 +5,9 @@ import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cartStore";
-import { fetchProductByHandle } from "@/lib/shopify";
+import { fetchProductByHandle, type ShopifyProduct } from "@/lib/shopify";
+
+type Product = NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 
 const productQueryOptions = (handle: string) => ({
   queryKey: ["product", handle],
