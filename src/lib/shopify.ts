@@ -336,7 +336,7 @@ export async function removeLineFromShopifyCart(
   return { success: true };
 }
 
-export async function fetchCart(cartId: string): Promise<{ cart: { id: string; totalQuantity: number } | null } | null> {
+export async function fetchCart(cartId: string): Promise<{ id: string; totalQuantity: number } | null> {
   const data = await storefrontApiRequest(CART_QUERY, { id: cartId });
   return data?.data?.cart || null;
 }
