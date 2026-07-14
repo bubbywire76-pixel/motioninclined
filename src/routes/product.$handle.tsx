@@ -34,24 +34,26 @@ export const Route = createFileRoute("/product/$handle")({
 });
 
 function ProductPage() {
-  const initialProduct = Route.useLoaderData();
-  const { data: product } = useSuspenseQuery({
+  const initialProduct = Route.useLoaderData() as Product;
+  const { data: untypedProduct } = useSuspenseQuery({
     ...productQueryOptions(initialProduct.handle),
     initialData: initialProduct,
   });
+  const product = untypedProduct as Product;
   const addItem = useCartStore((state) => state.addItem);
   const isLoading = useCartStore((state) => state.isLoading);
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {};
-    product.options.forEach((option) => {
+    product.options.forEach((option: Product["options"][number]) => {
       defaults[option.name] = option.values[0];
     });
     return defaults;
   });
 
-  const selectedVariant = product.variants.edges.find((edge) =>
-    edge.node.selectedOptions.every((option) => selectedOptions[option.name] === option.value),
+  const selectedVariant = product.variants.edges.find(
+    (edge: Product["variants"]["edges"][number]) =>
+      edge.node.selectedOptions.every((option: Product["variants"]["edges"][number]["node"]["selectedOptions"][number]) => selectedOptions[option.name] === option.value),
   )?.node;
 
   const image = product.images.edges[0]?.node;
