@@ -97,11 +97,11 @@ function ProductPage() {
           <p className="mt-6 text-muted-foreground leading-relaxed">{product.description}</p>
 
           <div className="mt-8 space-y-6">
-            {product.options.map((option) => (
+            {product.options.map((option: Product["options"][number]) => (
               <div key={option.name}>
                 <label className="mb-2 block text-sm font-semibold">{option.name}</label>
                 <div className="flex flex-wrap gap-2">
-                  {option.values.map((value) => (
+                  {option.values.map((value: string) => (
                     <button
                       key={value}
                       onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.name]: value }))}
