@@ -3,20 +3,23 @@ import { CartDrawer } from "./CartDrawer";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="text-3xl font-light tracking-[0.15em] uppercase" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-          Motion Inclined
-        </Link>
-        <nav className="hidden items-center gap-8 text-sm font-medium sm:flex">
-          <Link to="/" className="transition-colors hover:text-muted-foreground" activeProps={{ className: "text-brand" }}>
+    <header className="sticky top-0 z-40 w-full bg-background/85 backdrop-blur-lg">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-3 items-center px-6 sm:px-8">
+        <nav className="flex items-center gap-6 text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/70">
+          <Link to="/" className="transition-opacity hover:opacity-60">
             Shop
           </Link>
-          <a href="#about" className="transition-colors hover:text-muted-foreground">
+          <a href="/#about" className="hidden transition-opacity hover:opacity-60 sm:inline">
             About
           </a>
         </nav>
-        <div className="flex items-center gap-2">
+        <Link
+          to="/"
+          className="justify-self-center text-[11px] font-semibold uppercase tracking-[0.55em] text-foreground"
+        >
+          Motion Inclined
+        </Link>
+        <div className="flex items-center justify-end gap-4">
           <CartDrawer />
         </div>
       </div>
