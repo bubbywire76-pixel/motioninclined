@@ -30,23 +30,31 @@ function Index() {
   return (
     <div className="flex flex-col">
       <Hero />
-      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24" id="shop">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight">Latest drops</h2>
-            <p className="mt-2 text-muted-foreground">Fresh merch, ready to ship.</p>
-          </div>
+      <section className="mx-auto w-full max-w-7xl px-4 pb-24 sm:px-8" id="shop">
+        <div className="mb-10 flex items-baseline justify-between px-1">
+          <h2 className="text-[10px] font-semibold uppercase tracking-[0.4em]">
+            Shop Essentials
+          </h2>
+          <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+            {products?.length ?? 0} pieces
+          </span>
         </div>
         <ProductGrid products={products || []} />
       </section>
-      <section className="border-t border-border/60 bg-secondary/30 py-16 lg:py-24" id="about">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight">About Motion Inclined</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              We make clothing for people who care about quality, fit, and quiet confidence. Every piece is produced in limited runs so you’re not wearing what everyone else is.
-            </p>
-          </div>
+      <section className="border-t border-border/60 bg-card px-6 py-32 text-center" id="about">
+        <div className="mx-auto max-w-md">
+          <h4 className="mb-10 text-[9px] uppercase tracking-[0.5em] text-muted-foreground">
+            The Philosophy
+          </h4>
+          <p className="font-serif-display text-xl font-light italic leading-relaxed text-foreground/80 sm:text-2xl">
+            “The beauty of movement lies in its restraint. We design for the quiet space between performance and leisure.”
+          </p>
+          <div className="mx-auto mt-12 h-px w-8 bg-foreground/20" />
+          <p className="mt-12 text-[10px] uppercase leading-loose tracking-[0.25em] text-muted-foreground">
+            Architecture for the body.
+            <br />
+            Refinement for the soul.
+          </p>
         </div>
       </section>
     </div>

@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -132,9 +132,16 @@ function RootComponent() {
         <main className="flex-1">
           <Outlet />
         </main>
-        <footer className="border-t border-border/60 bg-background py-10">
-          <div className="mx-auto max-w-7xl px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
-            <p>&copy; {new Date().getFullYear()} Motion Inclined All rights reserved.</p>
+        <footer className="border-t border-border/60 bg-background py-16">
+          <div className="mx-auto max-w-7xl px-6 text-center sm:px-8">
+            <div className="mb-8 flex justify-center gap-8 text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+              <a href="/#shop" className="hover:opacity-60">Shop</a>
+              <a href="/#about" className="hover:opacity-60">About</a>
+              <a href="mailto:hello@motioninclined.com" className="hover:opacity-60">Contact</a>
+            </div>
+            <p className="text-[8px] uppercase tracking-[0.55em] text-muted-foreground/60">
+              Motion Inclined © {new Date().getFullYear()}
+            </p>
           </div>
         </footer>
       </div>
