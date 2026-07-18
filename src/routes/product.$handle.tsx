@@ -71,44 +71,52 @@ function ProductPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
       <Link
         to="/"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        className="mb-8 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground transition-opacity hover:opacity-60"
       >
-        <ArrowLeft className="h-4 w-4" />
-        Back to shop
+        <ArrowLeft className="h-3 w-3" />
+        Back
       </Link>
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="aspect-[4/5] overflow-hidden rounded-lg bg-muted">
+      <div className="grid gap-10 lg:grid-cols-2 lg:gap-20">
+        <div className="aspect-[4/5] overflow-hidden bg-muted">
           {image ? (
             <img src={image.url} alt={image.altText || product.title} className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">No image</div>
+            <div className="flex h-full items-center justify-center text-xs uppercase tracking-widest text-muted-foreground">No image</div>
           )}
         </div>
         <div className="flex flex-col justify-center">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
-          <p className="mt-4 text-2xl font-semibold">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
+            Motion Inclined
+          </p>
+          <h1 className="mt-4 text-2xl font-light tracking-tight sm:text-3xl">
+            {product.title}
+          </h1>
+          <p className="mt-4 text-sm tracking-wide text-foreground/80">
             {selectedVariant
               ? `${selectedVariant.price.currencyCode} ${parseFloat(selectedVariant.price.amount).toFixed(2)}`
               : `${product.priceRange.minVariantPrice.currencyCode} ${parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
           </p>
-          <p className="mt-6 text-muted-foreground leading-relaxed">{product.description}</p>
+          <div className="mt-8 h-px w-8 bg-foreground/20" />
+          <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{product.description}</p>
 
-          <div className="mt-8 space-y-6">
+          <div className="mt-10 space-y-6">
             {product.options.map((option: Product["options"][number]) => (
               <div key={option.name}>
-                <label className="mb-2 block text-sm font-semibold">{option.name}</label>
+                <label className="mb-3 block text-[10px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
+                  {option.name}
+                </label>
                 <div className="flex flex-wrap gap-2">
                   {option.values.map((value: string) => (
                     <button
                       key={value}
                       onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.name]: value }))}
-                      className={`rounded-md border px-4 py-2 text-sm font-medium transition-colors ${
+                      className={`border px-4 py-2 text-[10px] uppercase tracking-[0.2em] transition-colors ${
                         selectedOptions[option.name] === value
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background hover:bg-secondary"
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border bg-background hover:border-foreground/60"
                       }`}
                     >
                       {value}
@@ -121,14 +129,14 @@ function ProductPage() {
 
           <Button
             size="lg"
-            className="mt-10 w-full sm:w-auto"
+            className="mt-12 w-full rounded-none text-[10px] uppercase tracking-[0.3em] sm:w-auto"
             onClick={handleAddToCart}
             disabled={isLoading || !selectedVariant?.availableForSale}
           >
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              <ShoppingBag className="mr-2 h-4 w-4" />
+              <ShoppingBag className="mr-2 h-3 w-3" />
             )}
             {selectedVariant?.availableForSale === false ? "Sold out" : "Add to cart"}
           </Button>
