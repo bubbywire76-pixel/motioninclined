@@ -19,18 +19,30 @@ export interface CartItem {
   selectedOptions: Array<{ name: string; value: string }>;
 }
 
+export interface OrderSnapshot {
+  items: CartItem[];
+  total: number;
+  currencyCode: string;
+  completedAt: number;
+}
+
 interface CartStore {
   items: CartItem[];
   cartId: string | null;
   checkoutUrl: string | null;
   isLoading: boolean;
   isSyncing: boolean;
+  pendingOrder: OrderSnapshot | null;
+  lastOrder: OrderSnapshot | null;
+  orderJustCompleted: boolean;
   addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
   syncCart: () => Promise<void>;
   getCheckoutUrl: () => string | null;
+  snapshotPendingOrder: () => void;
+  consumeOrderCompleted: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -41,6 +53,26 @@ export const useCartStore = create<CartStore>()(
       checkoutUrl: null,
       isLoading: false,
       isSyncing: false,
+      pendingOrder: null,
+      lastOrder: null,
+      orderJustCompleted: false,
+
+      snapshotPendingOrder: () => {
+        const { items } = get();
+        if (items.length === 0) return;
+        const total = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
+        const currencyCode = items[0]?.price.currencyCode || "USD";
+        set({
+          pendingOrder: {
+            items: items.map((i) => ({ ...i })),
+            total,
+            currencyCode,
+            completedAt: Date.now(),
+          },
+        });
+      },
+
+      consumeOrderCompleted: () => set({ orderJustCompleted: false }),
 
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();
@@ -142,14 +174,19 @@ export const useCartStore = create<CartStore>()(
       getCheckoutUrl: () => get().checkoutUrl,
 
       syncCart: async () => {
-        const { cartId, isSyncing, clearCart } = get();
+        const { cartId, isSyncing, clearCart, pendingOrder, items } = get();
         if (!cartId || isSyncing) return;
 
         set({ isSyncing: true });
         try {
           const cart = await fetchCart(cartId);
           if (!cart) return;
-          if (!cart || cart.totalQuantity === 0) clearCart();
+          if (cart.totalQuantity === 0) {
+            if (pendingOrder && items.length > 0) {
+              set({ lastOrder: pendingOrder, pendingOrder: null, orderJustCompleted: true });
+            }
+            clearCart();
+          }
         } catch (error) {
           console.error("Failed to sync cart with Shopify:", error);
         } finally {
@@ -164,6 +201,8 @@ export const useCartStore = create<CartStore>()(
         items: state.items,
         cartId: state.cartId,
         checkoutUrl: state.checkoutUrl,
+        pendingOrder: state.pendingOrder,
+        lastOrder: state.lastOrder,
       }),
     },
   ),
