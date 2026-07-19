@@ -19,18 +19,30 @@ export interface CartItem {
   selectedOptions: Array<{ name: string; value: string }>;
 }
 
+export interface OrderSnapshot {
+  items: CartItem[];
+  total: number;
+  currencyCode: string;
+  completedAt: number;
+}
+
 interface CartStore {
   items: CartItem[];
   cartId: string | null;
   checkoutUrl: string | null;
   isLoading: boolean;
   isSyncing: boolean;
+  pendingOrder: OrderSnapshot | null;
+  lastOrder: OrderSnapshot | null;
+  orderJustCompleted: boolean;
   addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
   syncCart: () => Promise<void>;
   getCheckoutUrl: () => string | null;
+  snapshotPendingOrder: () => void;
+  consumeOrderCompleted: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
