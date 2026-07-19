@@ -174,14 +174,19 @@ export const useCartStore = create<CartStore>()(
       getCheckoutUrl: () => get().checkoutUrl,
 
       syncCart: async () => {
-        const { cartId, isSyncing, clearCart } = get();
+        const { cartId, isSyncing, clearCart, pendingOrder, items } = get();
         if (!cartId || isSyncing) return;
 
         set({ isSyncing: true });
         try {
           const cart = await fetchCart(cartId);
           if (!cart) return;
-          if (!cart || cart.totalQuantity === 0) clearCart();
+          if (cart.totalQuantity === 0) {
+            if (pendingOrder && items.length > 0) {
+              set({ lastOrder: pendingOrder, pendingOrder: null, orderJustCompleted: true });
+            }
+            clearCart();
+          }
         } catch (error) {
           console.error("Failed to sync cart with Shopify:", error);
         } finally {
@@ -196,6 +201,8 @@ export const useCartStore = create<CartStore>()(
         items: state.items,
         cartId: state.cartId,
         checkoutUrl: state.checkoutUrl,
+        pendingOrder: state.pendingOrder,
+        lastOrder: state.lastOrder,
       }),
     },
   ),
