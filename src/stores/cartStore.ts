@@ -53,6 +53,26 @@ export const useCartStore = create<CartStore>()(
       checkoutUrl: null,
       isLoading: false,
       isSyncing: false,
+      pendingOrder: null,
+      lastOrder: null,
+      orderJustCompleted: false,
+
+      snapshotPendingOrder: () => {
+        const { items } = get();
+        if (items.length === 0) return;
+        const total = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
+        const currencyCode = items[0]?.price.currencyCode || "USD";
+        set({
+          pendingOrder: {
+            items: items.map((i) => ({ ...i })),
+            total,
+            currencyCode,
+            completedAt: Date.now(),
+          },
+        });
+      },
+
+      consumeOrderCompleted: () => set({ orderJustCompleted: false }),
 
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();
