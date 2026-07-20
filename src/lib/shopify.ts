@@ -336,7 +336,43 @@ export async function removeLineFromShopifyCart(
   return { success: true };
 }
 
-export async function fetchCart(cartId: string): Promise<{ id: string; totalQuantity: number } | null> {
-  const data = await storefrontApiRequest(CART_QUERY, { id: cartId });
-  return data?.data?.cart || null;
+export type FetchCartResult =
+  | { ok: true; cart: { id: string; totalQuantity: number } | null }
+  | { ok: false; retriable: boolean; status?: number; error?: unknown };
+
+export async function fetchCart(cartId: string, timeoutMs = 8000): Promise<FetchCartResult> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(SHOPIFY_STOREFRONT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+      },
+      body: JSON.stringify({ query: CART_QUERY, variables: { id: cartId } }),
+      signal: controller.signal,
+    });
+
+    if (response.status === 402) {
+      return { ok: false, retriable: false, status: 402 };
+    }
+    if (response.status >= 500) {
+      return { ok: false, retriable: true, status: response.status };
+    }
+    if (!response.ok) {
+      return { ok: false, retriable: false, status: response.status };
+    }
+
+    const data = await response.json();
+    if (data.errors) {
+      return { ok: false, retriable: false, error: data.errors };
+    }
+    return { ok: true, cart: data?.data?.cart ?? null };
+  } catch (error) {
+    // Network error / abort / DNS — retriable
+    return { ok: false, retriable: true, error };
+  } finally {
+    clearTimeout(timeout);
+  }
 }

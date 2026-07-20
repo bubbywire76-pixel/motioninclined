@@ -33,8 +33,10 @@ interface CartStore {
   isLoading: boolean;
   isSyncing: boolean;
   pendingOrder: OrderSnapshot | null;
+  pendingOrderStartedAt: number | null;
   lastOrder: OrderSnapshot | null;
   orderJustCompleted: boolean;
+  checkoutOpenedAt: number | null;
   addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
@@ -43,6 +45,18 @@ interface CartStore {
   getCheckoutUrl: () => string | null;
   snapshotPendingOrder: () => void;
   consumeOrderCompleted: () => void;
+  markCheckoutOpened: () => void;
+  clearCheckoutOpened: () => void;
+}
+
+// TTL for a snapshotted pending order — after this, we don't promote it to lastOrder.
+const PENDING_ORDER_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+// Module-scoped in-flight sync so concurrent callers coalesce.
+let inflightSync: Promise<void> | null = null;
+
+function delay(ms: number) {
+  return new Promise<void>((r) => setTimeout(r, ms));
 }
 
 export const useCartStore = create<CartStore>()(
@@ -54,25 +68,31 @@ export const useCartStore = create<CartStore>()(
       isLoading: false,
       isSyncing: false,
       pendingOrder: null,
+      pendingOrderStartedAt: null,
       lastOrder: null,
       orderJustCompleted: false,
+      checkoutOpenedAt: null,
 
       snapshotPendingOrder: () => {
         const { items } = get();
         if (items.length === 0) return;
         const total = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
         const currencyCode = items[0]?.price.currencyCode || "USD";
+        const now = Date.now();
         set({
           pendingOrder: {
             items: items.map((i) => ({ ...i })),
             total,
             currencyCode,
-            completedAt: Date.now(),
+            completedAt: now,
           },
+          pendingOrderStartedAt: now,
         });
       },
 
       consumeOrderCompleted: () => set({ orderJustCompleted: false }),
+      markCheckoutOpened: () => set({ checkoutOpenedAt: Date.now() }),
+      clearCheckoutOpened: () => set({ checkoutOpenedAt: null }),
 
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();
@@ -170,28 +190,79 @@ export const useCartStore = create<CartStore>()(
         }
       },
 
-      clearCart: () => set({ items: [], cartId: null, checkoutUrl: null }),
+      clearCart: () =>
+        set({
+          items: [],
+          cartId: null,
+          checkoutUrl: null,
+        }),
+
       getCheckoutUrl: () => get().checkoutUrl,
 
       syncCart: async () => {
-        const { cartId, isSyncing, clearCart, pendingOrder, items } = get();
-        if (!cartId || isSyncing) return;
+        if (inflightSync) return inflightSync;
 
-        set({ isSyncing: true });
-        try {
-          const cart = await fetchCart(cartId);
-          if (!cart) return;
-          if (cart.totalQuantity === 0) {
-            if (pendingOrder && items.length > 0) {
-              set({ lastOrder: pendingOrder, pendingOrder: null, orderJustCompleted: true });
+        const run = async () => {
+          const { cartId, clearCart, pendingOrder, pendingOrderStartedAt, items } = get();
+          if (!cartId) return;
+
+          set({ isSyncing: true });
+          try {
+            const backoffs = [0, 250, 750, 2000];
+            let result: Awaited<ReturnType<typeof fetchCart>> | null = null;
+
+            for (let attempt = 0; attempt < backoffs.length; attempt++) {
+              if (backoffs[attempt] > 0) await delay(backoffs[attempt]);
+              result = await fetchCart(cartId);
+              if (result.ok) break;
+              if (!result.retriable) break;
+            }
+
+            if (!result || !result.ok) {
+              // Preserve local state; a later sync will try again.
+              if (result && !result.retriable) {
+                console.error("Cart sync failed (non-retriable):", result);
+              } else {
+                console.warn("Cart sync failed after retries:", result);
+              }
+              return;
+            }
+
+            const cart = result.cart;
+            const cartIsGone = cart === null || cart.totalQuantity === 0;
+            if (!cartIsGone) return;
+
+            // Cart is empty or expired on Shopify's side.
+            const snapshotFresh =
+              pendingOrder &&
+              pendingOrderStartedAt !== null &&
+              Date.now() - pendingOrderStartedAt < PENDING_ORDER_TTL_MS &&
+              items.length > 0;
+
+            if (snapshotFresh) {
+              set({
+                lastOrder: pendingOrder,
+                pendingOrder: null,
+                pendingOrderStartedAt: null,
+                orderJustCompleted: true,
+                checkoutOpenedAt: null,
+              });
+            } else if (pendingOrder) {
+              // Stale snapshot — drop it without promoting.
+              set({ pendingOrder: null, pendingOrderStartedAt: null });
             }
             clearCart();
+          } catch (error) {
+            console.error("Failed to sync cart with Shopify:", error);
+          } finally {
+            set({ isSyncing: false });
           }
-        } catch (error) {
-          console.error("Failed to sync cart with Shopify:", error);
-        } finally {
-          set({ isSyncing: false });
-        }
+        };
+
+        inflightSync = run().finally(() => {
+          inflightSync = null;
+        });
+        return inflightSync;
       },
     }),
     {
@@ -202,7 +273,9 @@ export const useCartStore = create<CartStore>()(
         cartId: state.cartId,
         checkoutUrl: state.checkoutUrl,
         pendingOrder: state.pendingOrder,
+        pendingOrderStartedAt: state.pendingOrderStartedAt,
         lastOrder: state.lastOrder,
+        checkoutOpenedAt: state.checkoutOpenedAt,
       }),
     },
   ),
