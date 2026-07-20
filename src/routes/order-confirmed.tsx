@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/stores/cartStore";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/order-confirmed")({
   head: () => ({
@@ -16,8 +17,28 @@ export const Route = createFileRoute("/order-confirmed")({
 
 function OrderConfirmed() {
   const lastOrder = useCartStore((s) => s.lastOrder);
+  const pendingOrder = useCartStore((s) => s.pendingOrder);
+  const syncCart = useCartStore((s) => s.syncCart);
+  const [finalizing, setFinalizing] = useState(false);
+
+  useEffect(() => {
+    if (!lastOrder && pendingOrder) {
+      setFinalizing(true);
+      syncCart().finally(() => setFinalizing(false));
+    }
+  }, [lastOrder, pendingOrder, syncCart]);
 
   if (!lastOrder) {
+    if (finalizing) {
+      return (
+        <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
+          <Loader2 className="mb-4 h-6 w-6 animate-spin text-muted-foreground" strokeWidth={1.5} />
+          <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
+            Finalizing your order…
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
         <h1 className="mb-4 text-2xl font-light tracking-tight">No recent order</h1>
