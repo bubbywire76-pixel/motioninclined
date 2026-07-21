@@ -5,7 +5,7 @@ import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cartStore";
-import { fetchProductByHandle, type ShopifyProduct } from "@/lib/shopify";
+import { fetchProductByHandle, formatPrice, type ShopifyProduct } from "@/lib/shopify";
 
 type Product = NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 
@@ -96,8 +96,8 @@ function ProductPage() {
           </h1>
           <p className="mt-4 text-sm tracking-wide text-foreground/80">
             {selectedVariant
-              ? `${selectedVariant.price.currencyCode} ${parseFloat(selectedVariant.price.amount).toFixed(2)}`
-              : `${product.priceRange.minVariantPrice.currencyCode} ${parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
+              ? formatPrice(selectedVariant.price.amount)
+              : formatPrice(product.priceRange.minVariantPrice.amount)}
           </p>
           <div className="mt-8 h-px w-8 bg-foreground/20" />
           <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{product.description}</p>

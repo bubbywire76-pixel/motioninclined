@@ -78,7 +78,7 @@ export function CartDrawer() {
                         </div>
                         <div className="flex items-center justify-between">
                           <p className="font-semibold">
-                            {item.price.currencyCode} {parseFloat(item.price.amount).toFixed(2)}
+                            {formatPrice(item.price.amount)}
                           </p>
                           <div className="flex items-center gap-2">
                             <Button
@@ -117,7 +117,7 @@ export function CartDrawer() {
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-semibold">Total</span>
                   <span className="text-xl font-bold">
-                    {currencyCode} {totalPrice.toFixed(2)}
+                    {formatPrice(totalPrice)}
                   </span>
                 </div>
                 <Button onClick={handleCheckout} className="w-full" size="lg" disabled={items.length === 0 || isLoading || isSyncing}>
