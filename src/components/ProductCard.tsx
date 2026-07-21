@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores/cartStore";
-import type { ShopifyProduct } from "@/lib/shopify";
+import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 
 interface ProductCardProps {
   product: ShopifyProduct;
