@@ -11,7 +11,7 @@ export function CartDrawer() {
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart, snapshotPendingOrder, markCheckoutOpened } = useCartStore();
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + parseFloat(item.price.amount) * item.quantity, 0);
-  const currencyCode = items[0]?.price.currencyCode || "";
+  
 
   useEffect(() => {
     if (isOpen) syncCart();
