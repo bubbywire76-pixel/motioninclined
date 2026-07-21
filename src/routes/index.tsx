@@ -32,9 +32,12 @@ function Index() {
       <Hero />
       <section className="mx-auto w-full max-w-7xl px-4 pb-24 sm:px-8" id="shop">
         <div className="mb-10 flex items-baseline justify-between px-1">
-          <h2 className="text-[10px] font-semibold uppercase tracking-[0.4em]">
-            Shop Essentials
-          </h2>
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.5em] text-muted-foreground">Drop 001</p>
+            <h2 className="mt-2 text-[10px] font-semibold uppercase tracking-[0.4em]">
+              Shop the Collection
+            </h2>
+          </div>
           <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
             {products?.length ?? 0} pieces
           </span>

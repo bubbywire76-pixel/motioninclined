@@ -4,13 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
+import { formatPrice } from "@/lib/shopify";
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart, snapshotPendingOrder, markCheckoutOpened } = useCartStore();
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + parseFloat(item.price.amount) * item.quantity, 0);
-  const currencyCode = items[0]?.price.currencyCode || "";
+  
 
   useEffect(() => {
     if (isOpen) syncCart();
@@ -77,7 +78,7 @@ export function CartDrawer() {
                         </div>
                         <div className="flex items-center justify-between">
                           <p className="font-semibold">
-                            {item.price.currencyCode} {parseFloat(item.price.amount).toFixed(2)}
+                            {formatPrice(item.price.amount)}
                           </p>
                           <div className="flex items-center gap-2">
                             <Button
@@ -116,7 +117,7 @@ export function CartDrawer() {
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-semibold">Total</span>
                   <span className="text-xl font-bold">
-                    {currencyCode} {totalPrice.toFixed(2)}
+                    {formatPrice(totalPrice)}
                   </span>
                 </div>
                 <Button onClick={handleCheckout} className="w-full" size="lg" disabled={items.length === 0 || isLoading || isSyncing}>

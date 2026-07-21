@@ -134,10 +134,18 @@ function RootComponent() {
         </main>
         <footer className="border-t border-border/60 bg-background py-16">
           <div className="mx-auto max-w-7xl px-6 text-center sm:px-8">
-            <div className="mb-8 flex justify-center gap-8 text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+            <div className="mb-8 flex flex-wrap justify-center gap-6 text-[9px] uppercase tracking-[0.3em] text-muted-foreground sm:gap-8">
               <a href="/#shop" className="hover:opacity-60">Shop</a>
               <a href="/#about" className="hover:opacity-60">About</a>
-              <a href="mailto:hello@motioninclined.com" className="hover:opacity-60">Contact</a>
+              <a href="mailto:bubbywire76@gmail.com" className="hover:opacity-60">bubbywire76@gmail.com</a>
+              <a
+                href="https://wa.me/2347043602465"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-60"
+              >
+                WhatsApp +234 704 360 2465
+              </a>
             </div>
             <p className="text-[8px] uppercase tracking-[0.55em] text-muted-foreground/60">
               Motion Inclined © {new Date().getFullYear()}

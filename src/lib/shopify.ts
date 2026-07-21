@@ -1,5 +1,11 @@
 import { toast } from "sonner";
 
+export function formatPrice(amount: string | number, _currencyCode?: string): string {
+  const value = typeof amount === "string" ? parseFloat(amount) : amount;
+  if (Number.isNaN(value)) return "";
+  return `NGN ${Math.round(value).toLocaleString("en-NG")}`;
+}
+
 export const SHOPIFY_API_VERSION = "2025-07";
 export const SHOPIFY_STORE_PERMANENT_DOMAIN = "my-merch-shop-hsh8y.myshopify.com";
 export const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
