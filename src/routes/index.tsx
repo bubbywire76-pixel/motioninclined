@@ -39,7 +39,6 @@ export const Route = createFileRoute("/")({
           slogan: "Move with purpose.",
           email: "bubbywire76@gmail.com",
           telephone: "+2347043602465",
-philosophy: undefined,
         }),
       },
     ],
