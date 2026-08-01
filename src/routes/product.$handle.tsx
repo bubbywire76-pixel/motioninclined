@@ -310,7 +310,7 @@ function ProductPage() {
             <button
               onClick={handleAddToCart}
               disabled={isLoading || selectedVariant?.availableForSale === false}
-              className="w-full rounded-full bg-foreground py-4.5 py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-300 hover:opacity-85 disabled:opacity-40"
+              className="w-full rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-300 hover:opacity-85 disabled:opacity-40"
             >
               {isLoading ? (
                 <Loader2 className="mx-auto h-4 w-4 animate-spin" />
