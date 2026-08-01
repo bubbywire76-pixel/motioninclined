@@ -1,26 +1,51 @@
 import { Link } from "@tanstack/react-router";
+import heroImage from "@/assets/hero-lifestyle.jpg";
 
 export function Hero() {
   return (
-    <section className="px-4 pt-4 pb-16 sm:px-8 sm:pt-8 sm:pb-24">
-      <div className="relative mx-auto aspect-[4/5] w-full max-w-6xl overflow-hidden bg-muted sm:aspect-[16/9]">
-        <img
-          src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?q=80&w=2000&auto=format&fit=crop"
-          alt="Motion Inclined seasonal editorial"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-end pb-10 text-center sm:pb-14">
-          <span className="mb-3 text-[9px] uppercase tracking-[0.4em] text-white/70 sm:text-[10px]">
-            Collection 01 — Essentials
-          </span>
-          <h1 className="max-w-xl px-8 text-2xl font-light tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Wear your own story.
-          </h1>
+    <section className="relative w-full overflow-hidden bg-muted">
+      <img
+        src={heroImage}
+        alt="Motion Inclined campaign — model walking across an open concrete plaza in premium streetwear"
+        width={1920}
+        height={1280}
+        className="h-[78vh] min-h-[520px] w-full object-cover sm:h-[88vh]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/10" />
+      <div className="absolute inset-0 flex flex-col items-center justify-end px-6 pb-16 text-center sm:pb-24">
+        <p
+          className="animate-fade-up text-[9px] uppercase tracking-[0.45em] text-white/75 sm:text-[10px]"
+          style={{ animationDelay: "120ms" }}
+        >
+          Collection 01 — Essentials
+        </p>
+        <h1
+          className="animate-fade-up display-hd mt-6 max-w-4xl text-[13vw] text-white sm:text-6xl lg:text-8xl"
+          style={{ animationDelay: "240ms" }}
+        >
+          MOVE WITH PURPOSE.
+        </h1>
+        <p
+          className="animate-fade-up mt-6 max-w-md text-sm leading-relaxed text-white/80"
+          style={{ animationDelay: "380ms" }}
+        >
+          Premium streetwear created for those who refuse to stand still.
+        </p>
+        <div
+          className="animate-fade-up mt-10 flex flex-col items-center gap-3 sm:flex-row sm:gap-4"
+          style={{ animationDelay: "520ms" }}
+        >
           <Link
-            to="/"
-            className="mt-8 border-b border-white/70 pb-1 text-[10px] uppercase tracking-[0.35em] text-white transition-opacity hover:opacity-70"
+            to="/shop"
+            className="w-56 rounded-full bg-background px-8 py-4 text-[10px] uppercase tracking-[0.3em] text-foreground transition-all duration-500 hover:scale-[1.03] sm:w-auto"
           >
-            Shop the collection
+            Shop Collection
+          </Link>
+          <Link
+            to="/about"
+            className="w-56 rounded-full border border-white/60 px-8 py-4 text-[10px] uppercase tracking-[0.3em] text-white transition-all duration-500 hover:bg-white hover:text-foreground sm:w-auto"
+          >
+            Explore Motion
           </Link>
         </div>
       </div>
