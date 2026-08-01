@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -16,11 +17,18 @@ import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
+import { Route as JournalRouteImport } from './routes/journal'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 
+const TrackOrderRoute = TrackOrderRouteImport.update({
+  id: '/track-order',
+  path: '/track-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -56,6 +64,16 @@ const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
   path: '/order-confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -81,6 +99,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/journal': typeof JournalRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/returns': typeof ReturnsRoute
@@ -88,12 +108,15 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/track-order': typeof TrackOrderRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/journal': typeof JournalRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/returns': typeof ReturnsRoute
@@ -101,6 +124,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/track-order': typeof TrackOrderRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRoutesById {
@@ -108,6 +132,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/journal': typeof JournalRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/returns': typeof ReturnsRoute
@@ -115,6 +141,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/track-order': typeof TrackOrderRoute
   '/product/$handle': typeof ProductHandleRoute
 }
 export interface FileRouteTypes {
@@ -123,6 +150,8 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/faq'
+    | '/journal'
     | '/order-confirmed'
     | '/privacy'
     | '/returns'
@@ -130,12 +159,15 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/terms'
+    | '/track-order'
     | '/product/$handle'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/contact'
+    | '/faq'
+    | '/journal'
     | '/order-confirmed'
     | '/privacy'
     | '/returns'
@@ -143,12 +175,15 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/terms'
+    | '/track-order'
     | '/product/$handle'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/contact'
+    | '/faq'
+    | '/journal'
     | '/order-confirmed'
     | '/privacy'
     | '/returns'
@@ -156,6 +191,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/terms'
+    | '/track-order'
     | '/product/$handle'
   fileRoutesById: FileRoutesById
 }
@@ -163,6 +199,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
+  JournalRoute: typeof JournalRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
   ReturnsRoute: typeof ReturnsRoute
@@ -170,11 +208,19 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  TrackOrderRoute: typeof TrackOrderRoute
   ProductHandleRoute: typeof ProductHandleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/track-order': {
+      id: '/track-order'
+      path: '/track-order'
+      fullPath: '/track-order'
+      preLoaderRoute: typeof TrackOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -224,6 +270,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -259,6 +319,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
+  JournalRoute: JournalRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
   ReturnsRoute: ReturnsRoute,
@@ -266,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  TrackOrderRoute: TrackOrderRoute,
   ProductHandleRoute: ProductHandleRoute,
 }
 export const routeTree = rootRouteImport
