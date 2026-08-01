@@ -53,25 +53,25 @@
 }
 
 :root {
-  --radius: 0;
-  --background: oklch(0.965 0.003 90);
-  --foreground: oklch(0.18 0.005 60);
-  --card: oklch(0.955 0.004 85);
+  --radius: 0.75rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.17 0.004 60);
+  --card: oklch(0.985 0.002 80);
   --card-foreground: oklch(0.18 0.005 60);
   --popover: oklch(0.98 0.003 90);
   --popover-foreground: oklch(0.18 0.005 60);
   --primary: oklch(0.18 0.005 60);
   --primary-foreground: oklch(0.965 0.003 90);
-  --secondary: oklch(0.93 0.005 85);
+  --secondary: oklch(0.955 0.004 80);
   --secondary-foreground: oklch(0.18 0.005 60);
-  --muted: oklch(0.92 0.005 85);
-  --muted-foreground: oklch(0.5 0.008 70);
+  --muted: oklch(0.958 0.003 80);
+  --muted-foreground: oklch(0.55 0.006 70);
   --accent: oklch(0.88 0.008 75);
   --accent-foreground: oklch(0.18 0.005 60);
   --destructive: oklch(0.5 0.14 30);
   --destructive-foreground: oklch(0.98 0.003 90);
-  --border: oklch(0.86 0.005 80);
-  --input: oklch(0.86 0.005 80);
+  --border: oklch(0.905 0.004 80);
+  --input: oklch(0.905 0.004 80);
   --ring: oklch(0.5 0.01 70);
   --chart-1: oklch(0.5 0.05 60);
   --chart-2: oklch(0.6 0.04 80);
@@ -152,5 +152,52 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .display-hd {
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+  }
+}
+
+@keyframes mi-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  .animate-fade-up {
+    animation: mi-fade-up 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }

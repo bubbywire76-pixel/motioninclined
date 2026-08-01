@@ -8,13 +8,15 @@ import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 interface ProductCardProps {
   product: ShopifyProduct;
   index?: number;
+  priority?: boolean;
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, index = 0, priority = false }: ProductCardProps) {
   const firstVariant = product.node.variants.edges[0]?.node;
-  const image = product.node.images.edges[0]?.node;
+  const images = product.node.images.edges;
+  const image = images[0]?.node;
+  const hoverImage = images[1]?.node;
   const price = firstVariant?.price || product.node.priceRange.minVariantPrice;
-  const stagger = index % 2 === 1 ? "mt-10" : "";
 
   const addItem = useCartStore((s) => s.addItem);
   const [adding, setAdding] = useState<string | null>(null);
@@ -50,37 +52,48 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   };
 
   return (
-    <div className={`group relative ${stagger}`}>
-      <Link
-        to="/product/$handle"
-        params={{ handle: product.node.handle }}
-        className="block"
-      >
-        <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+    <article className="group relative flex flex-col">
+      <Link to="/product/$handle" params={{ handle: product.node.handle }} className="block">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
           {image ? (
-            <img
-              src={image.url}
-              alt={image.altText || product.node.title}
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-            />
+            <>
+              <img
+                src={image.url}
+                alt={image.altText || `${product.node.title} — Motion Inclined`}
+                loading={priority && index < 2 ? "eager" : "lazy"}
+                className={`h-full w-full object-cover transition-all duration-[1200ms] ease-out group-hover:scale-[1.06] ${
+                  hoverImage ? "group-hover:opacity-0" : ""
+                }`}
+              />
+              {hoverImage && (
+                <img
+                  src={hoverImage.url}
+                  alt={hoverImage.altText || `${product.node.title} alternate view`}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-[1200ms] ease-out group-hover:scale-[1.06] group-hover:opacity-100"
+                />
+              )}
+            </>
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-widest text-muted-foreground">
+            <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
               No image
             </div>
           )}
         </div>
-        <div className="mt-4 px-0.5">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em]">
-            {product.node.title}
-          </p>
-          <p className="mt-1 text-[10px] tracking-wide text-muted-foreground">
-            {formatPrice(price.amount)}
-          </p>
-        </div>
       </Link>
-      <div className="mt-3 px-0.5">
+
+      <div className="mt-5 flex items-start justify-between gap-4">
+        <Link to="/product/$handle" params={{ handle: product.node.handle }}>
+          <h3 className="text-[13px] font-medium tracking-tight text-foreground">
+            {product.node.title}
+          </h3>
+          <p className="mt-1.5 text-[12px] text-muted-foreground">{formatPrice(price.amount)}</p>
+        </Link>
+      </div>
+
+      <div className="mt-4">
         {hasSizes ? (
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-4 gap-1.5">
             {sizeOption!.values.map((size) => {
               const variant = product.node.variants.edges.find((v) =>
                 v.node.selectedOptions.some(
@@ -93,7 +106,8 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                   key={size}
                   onClick={(e) => handleQuickAdd(e, size)}
                   disabled={!!adding}
-                  className="flex items-center justify-center border border-foreground/15 bg-background py-2 text-[10px] uppercase tracking-[0.2em] transition-colors hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-40"
+                  aria-label={`Add ${product.node.title} size ${size} to cart`}
+                  className="flex items-center justify-center rounded-full border border-border py-2.5 text-[10px] uppercase tracking-[0.15em] transition-all duration-300 hover:border-foreground hover:bg-foreground hover:text-background disabled:opacity-40"
                 >
                   {isAdding ? <Loader2 className="h-3 w-3 animate-spin" /> : size}
                 </button>
@@ -104,12 +118,12 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           <button
             onClick={(e) => handleQuickAdd(e)}
             disabled={!!adding}
-            className="flex w-full items-center justify-center bg-foreground py-2.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="flex w-full items-center justify-center rounded-full bg-foreground py-3 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-300 hover:opacity-85 disabled:opacity-50"
           >
             {adding ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to cart"}
           </button>
         )}
       </div>
-    </div>
+    </article>
   );
 }

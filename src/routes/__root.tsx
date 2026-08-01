@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useCartSync } from "@/hooks/useCartSync";
 
 function NotFoundComponent() {
@@ -80,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Motion Inclined — Premium Streetwear" },
+      { title: "Motion Inclined — Move With Purpose" },
       { name: "description", content: "Shop the latest drops from Motion Inclined Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
       { name: "author", content: "Motion Inclined" },
       { property: "og:title", content: "Motion Inclined — Premium Streetwear" },
@@ -97,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -132,26 +133,7 @@ function RootComponent() {
         <main className="flex-1">
           <Outlet />
         </main>
-        <footer className="border-t border-border/60 bg-background py-16">
-          <div className="mx-auto max-w-7xl px-6 text-center sm:px-8">
-            <div className="mb-8 flex flex-wrap justify-center gap-6 text-[9px] uppercase tracking-[0.3em] text-muted-foreground sm:gap-8">
-              <a href="/#shop" className="hover:opacity-60">Shop</a>
-              <a href="/#about" className="hover:opacity-60">About</a>
-              <a href="mailto:bubbywire76@gmail.com" className="hover:opacity-60">bubbywire76@gmail.com</a>
-              <a
-                href="https://wa.me/2347043602465"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-60"
-              >
-                WhatsApp +234 704 360 2465
-              </a>
-            </div>
-            <p className="text-[8px] uppercase tracking-[0.55em] text-muted-foreground/60">
-              Motion Inclined © {new Date().getFullYear()}
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </div>
       <Toaster position="top-center" />
     </QueryClientProvider>
