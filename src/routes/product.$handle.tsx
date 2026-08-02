@@ -70,27 +70,15 @@ const SIZE_GUIDE = [
   ["XL", "61", "77", "66"],
 ];
 
-const REVIEWS = [
-  { name: "Tobi A.", text: "The weight of this fabric is unreal. Feels like a designer piece at a fair price.", stars: 5 },
-  { name: "Amara N.", text: "Fit is perfect and the print hasn't faded after several washes.", stars: 5 },
-  { name: "Kelechi O.", text: "Shipped fast and the packaging alone felt premium. Ordering again.", stars: 4 },
-];
-
 function useRecentlyViewed(handle: string) {
-  const [handles, setHandles] = useState<string[]>([]);
+  const handles = useRecentlyViewedStore((s) => s.handles);
+  const push = useRecentlyViewedStore((s) => s.push);
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem("mi-recently-viewed");
-      const list: string[] = raw ? JSON.parse(raw) : [];
-      setHandles(list.filter((h) => h !== handle));
-      const next = [handle, ...list.filter((h) => h !== handle)].slice(0, 8);
-      window.localStorage.setItem("mi-recently-viewed", JSON.stringify(next));
-    } catch {
-      /* storage unavailable */
-    }
-  }, [handle]);
-  return handles;
+    push(handle);
+  }, [handle, push]);
+  return handles.filter((h) => h !== handle);
 }
+
 
 function ProductPage() {
   const initialProduct = Route.useLoaderData() as Product;
