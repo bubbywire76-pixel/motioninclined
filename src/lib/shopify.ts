@@ -67,6 +67,9 @@ const STOREFRONT_QUERY = `
           title
           description
           handle
+          tags
+          createdAt
+          availableForSale
           priceRange {
             minVariantPrice {
               amount
