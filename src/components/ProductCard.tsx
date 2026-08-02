@@ -175,7 +175,7 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
                 ),
               )?.node;
               const isAdding = !!adding && !!variant && adding === variant.id;
-              const unavailable = variant ? !variant.availableForSale : false;
+              const unavailable = false;
               return (
                 <button
                   key={size}

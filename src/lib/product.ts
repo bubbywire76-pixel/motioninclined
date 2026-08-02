@@ -11,14 +11,12 @@ export function isNewProduct(p: ShopifyProduct) {
 export function isLimited(p: ShopifyProduct) {
   const tags = (p.node.tags || []).map((t) => t.toLowerCase());
   if (tags.some((t) => t.includes("limited"))) return true;
-  const variants = p.node.variants.edges;
-  const inStock = variants.filter((v) => v.node.availableForSale).length;
-  return variants.length > 1 && inStock > 0 && inStock <= 2;
+  return false;
 }
 
-export function isSoldOut(p: ShopifyProduct) {
-  const variants = p.node.variants.edges;
-  return variants.length > 0 && variants.every((v) => !v.node.availableForSale);
+// Inventory is not tracked in this store — every published piece is orderable.
+export function isSoldOut(_p: ShopifyProduct) {
+  return false;
 }
 
 const COLOR_MAP: Record<string, string> = {

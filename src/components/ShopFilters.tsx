@@ -63,21 +63,6 @@ export function ShopFilters({
         </FilterGroup>
       )}
 
-      <FilterGroup label="Availability">
-        <div className="flex flex-wrap gap-2">
-          <Chip
-            active={state.availability === "all"}
-            onClick={() => onChange({ ...state, availability: "all" })}
-            label="All"
-          />
-          <Chip
-            active={state.availability === "in-stock"}
-            onClick={() => onChange({ ...state, availability: "in-stock" })}
-            label="In stock"
-          />
-        </div>
-      </FilterGroup>
-
       <FilterGroup label="Price">
         <div className="flex flex-wrap gap-2">
           {[null, 35000, 45000, 100000].map((p) => (
@@ -150,10 +135,6 @@ export function applyFilters(
       const ok = p.node.options.some(
         (o) => o.name.toLowerCase() === "color" && o.values.includes(state.color),
       );
-      if (!ok) return false;
-    }
-    if (state.availability === "in-stock") {
-      const ok = p.node.variants.edges.some((v) => v.node.availableForSale);
       if (!ok) return false;
     }
     if (state.maxPrice !== null) {
