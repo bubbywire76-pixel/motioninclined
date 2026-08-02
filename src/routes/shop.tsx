@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -320,10 +320,6 @@ function ShopPage() {
           </div>
         </div>
       )}
-
-      <div className="sr-only">
-        <Link to="/">Home</Link>
-      </div>
     </div>
   );
 }

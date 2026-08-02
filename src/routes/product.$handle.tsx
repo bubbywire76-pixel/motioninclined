@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Loader2, Star, Truck, RotateCcw, ShieldCheck, Plus, X } from "lucide-react";
+import { ArrowLeft, Loader2, Truck, RotateCcw, ShieldCheck, Plus, X } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
 import { useCartStore } from "@/stores/cartStore";
