@@ -6,6 +6,7 @@ import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
 import { useCartStore } from "@/stores/cartStore";
 import { fetchProductByHandle, fetchProducts, formatPrice } from "@/lib/shopify";
+import { useRecentlyViewedStore } from "@/stores/recentlyViewedStore";
 
 type Product = NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 
