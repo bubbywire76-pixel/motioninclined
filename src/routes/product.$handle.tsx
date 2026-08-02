@@ -1,11 +1,12 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Loader2, Star, Truck, RotateCcw, ShieldCheck, Plus, X } from "lucide-react";
+import { ArrowLeft, Loader2, Truck, RotateCcw, ShieldCheck, Plus, X } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
 import { useCartStore } from "@/stores/cartStore";
 import { fetchProductByHandle, fetchProducts, formatPrice } from "@/lib/shopify";
+import { useRecentlyViewedStore } from "@/stores/recentlyViewedStore";
 
 type Product = NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 
@@ -70,27 +71,15 @@ const SIZE_GUIDE = [
   ["XL", "61", "77", "66"],
 ];
 
-const REVIEWS = [
-  { name: "Tobi A.", text: "The weight of this fabric is unreal. Feels like a designer piece at a fair price.", stars: 5 },
-  { name: "Amara N.", text: "Fit is perfect and the print hasn't faded after several washes.", stars: 5 },
-  { name: "Kelechi O.", text: "Shipped fast and the packaging alone felt premium. Ordering again.", stars: 4 },
-];
-
 function useRecentlyViewed(handle: string) {
-  const [handles, setHandles] = useState<string[]>([]);
+  const handles = useRecentlyViewedStore((s) => s.handles);
+  const push = useRecentlyViewedStore((s) => s.push);
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem("mi-recently-viewed");
-      const list: string[] = raw ? JSON.parse(raw) : [];
-      setHandles(list.filter((h) => h !== handle));
-      const next = [handle, ...list.filter((h) => h !== handle)].slice(0, 8);
-      window.localStorage.setItem("mi-recently-viewed", JSON.stringify(next));
-    } catch {
-      /* storage unavailable */
-    }
-  }, [handle]);
-  return handles;
+    push(handle);
+  }, [handle, push]);
+  return handles.filter((h) => h !== handle);
 }
+
 
 function ProductPage() {
   const initialProduct = Route.useLoaderData() as Product;
@@ -257,16 +246,14 @@ function ProductPage() {
             Motion Inclined
           </p>
           <h1 className="display-hd mt-5 text-3xl sm:text-5xl">{product.title}</h1>
-          <div className="mt-5 flex items-center gap-3">
-            <div className="flex gap-0.5">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <Star key={i} className="h-3 w-3 fill-foreground text-foreground" strokeWidth={0} />
-              ))}
-            </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {REVIEWS.length} reviews
-            </span>
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span>Drop 001</span>
+            <span aria-hidden="true">·</span>
+            <span>Limited run</span>
+            <span aria-hidden="true">·</span>
+            <span>Free shipping over ₦100,000</span>
           </div>
+
           <p className="mt-6 text-lg tracking-tight">{formatPrice(price)}</p>
 
           <div className="mt-10 space-y-7">
@@ -384,22 +371,25 @@ function ProductPage() {
       {/* Reviews */}
       <section className="mx-auto w-full max-w-[1600px] px-5 py-24 sm:px-10 sm:py-36">
         <Reveal className="mb-14">
-          <h2 className="display-hd text-3xl sm:text-5xl">Customer Reviews</h2>
+          <p className="eyebrow">Community</p>
+          <h2 className="display-hd mt-6 text-3xl sm:text-5xl">Customer Reviews</h2>
         </Reveal>
-        <div className="grid gap-10 sm:grid-cols-3">
-          {REVIEWS.map((r, i) => (
-            <Reveal key={r.name} delay={i * 90} className="rounded-3xl border border-border p-8">
-              <div className="flex gap-0.5">
-                {Array.from({ length: r.stars }).map((_, s) => (
-                  <Star key={s} className="h-3 w-3 fill-foreground text-foreground" strokeWidth={0} />
-                ))}
-              </div>
-              <p className="mt-6 text-sm leading-loose text-muted-foreground">"{r.text}"</p>
-              <p className="mt-6 text-[9px] uppercase tracking-[0.3em]">{r.name}</p>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal className="rounded-3xl border border-dashed border-border px-8 py-16 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em]">No reviews yet</p>
+          <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Own this piece? Share your experience with us on WhatsApp and we'll publish it here.
+          </p>
+          <a
+            href="https://wa.me/2347043602465"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-block rounded-full border border-foreground px-8 py-3.5 text-[10px] uppercase tracking-[0.3em] transition-all duration-500 hover:bg-foreground hover:text-background"
+          >
+            Leave a review
+          </a>
+        </Reveal>
       </section>
+
 
       {related.length > 0 && (
         <section className="mx-auto w-full max-w-[1600px] border-t border-border px-5 py-24 sm:px-10 sm:py-36">
