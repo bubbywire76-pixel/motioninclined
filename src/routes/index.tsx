@@ -3,7 +3,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Gem, Compass, Layers, Truck, ShieldCheck } from "lucide-react";
 import { Hero } from "@/components/Hero";
 import { ProductGrid } from "@/components/ProductGrid";
-import { ProductCarousel } from "@/components/ProductCarousel";
+import { ProductRail } from "@/components/ProductRail";
+import { TrustBar } from "@/components/TrustBar";
 import { Newsletter } from "@/components/Newsletter";
 import { InstagramGallery } from "@/components/InstagramGallery";
 import { Reveal } from "@/components/Reveal";
@@ -28,6 +29,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: "Motion Inclined — Move With Purpose" },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     scripts: [
       {
@@ -54,6 +57,14 @@ const REASONS = [
   { icon: ShieldCheck, title: "Secure Checkout", copy: "Encrypted payments through a trusted checkout." },
 ];
 
+const MARQUEE = [
+  "MOVE WITH PURPOSE",
+  "DROP 001",
+  "LIMITED RUNS",
+  "STAY INCLINED",
+  "MADE FOR MOTION",
+];
+
 function Index() {
   const { data: products } = useSuspenseQuery(productsQueryOptions);
   const all = products ?? [];
@@ -64,16 +75,26 @@ function Index() {
     <div className="flex flex-col">
       <Hero />
 
+      <TrustBar />
+
       {/* Featured collection */}
-      <section className="mx-auto w-full max-w-[1600px] px-5 py-28 sm:px-10 sm:py-40" id="shop">
-        <Reveal className="mb-16 flex flex-col gap-6 sm:mb-24 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[9px] uppercase tracking-[0.45em] text-muted-foreground">Drop 001</p>
-            <h2 className="display-hd mt-5 text-4xl sm:text-6xl">Featured Collection</h2>
+      <section className="mx-auto w-full max-w-[1600px] px-5 py-32 sm:px-10 sm:py-48" id="shop">
+        <Reveal className="mb-20 flex flex-col gap-8 sm:mb-32 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-xl">
+            <p className="eyebrow">Drop 001</p>
+            <h2 className="display-hd mt-6 text-[13vw] leading-[0.92] sm:text-7xl">
+              Featured
+              <br />
+              <span className="font-serif-display font-light italic tracking-tight">Collection</span>
+            </h2>
+            <p className="mt-8 text-sm leading-relaxed text-muted-foreground">
+              Three pieces that define the season — cut from heavyweight cotton, finished by hand,
+              produced in counted numbers.
+            </p>
           </div>
           <Link
             to="/shop"
-            className="text-[10px] uppercase tracking-[0.3em] text-foreground/70 underline-offset-8 transition-opacity hover:opacity-50 hover:underline"
+            className="link-underline self-start text-[10px] uppercase tracking-[0.3em] text-foreground/70 transition-colors hover:text-foreground"
           >
             View all {all.length} pieces
           </Link>
@@ -81,11 +102,31 @@ function Index() {
         <ProductGrid products={featured} columns={3} />
       </section>
 
+      {/* Marquee */}
+      <div className="overflow-hidden border-y border-border py-6">
+        <div className="animate-marquee flex w-max gap-14 whitespace-nowrap">
+          {[...MARQUEE, ...MARQUEE, ...MARQUEE, ...MARQUEE].map((word, i) => (
+            <span
+              key={i}
+              className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground"
+              aria-hidden={i > MARQUEE.length - 1}
+            >
+              {word}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Philosophy */}
-      <section className="border-y border-border bg-card px-6 py-32 sm:py-48" id="about">
+      <section className="bg-card px-6 py-40 sm:py-60" id="about">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <h2 className="display-hd text-4xl sm:text-7xl">More Than Clothing.</h2>
-          <div className="mx-auto mt-14 max-w-xl space-y-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="eyebrow">The philosophy</p>
+          <h2 className="display-hd mt-8 text-5xl sm:text-8xl">
+            More Than
+            <br />
+            <span className="font-serif-display font-light italic">Clothing.</span>
+          </h2>
+          <div className="mx-auto mt-16 max-w-xl space-y-6 text-base leading-[1.9] text-muted-foreground sm:text-lg">
             <p>Motion isn't just movement.</p>
             <p>It's choosing discipline. It's choosing progress. It's choosing growth.</p>
             <p>
@@ -93,29 +134,40 @@ function Index() {
               who keep moving.
             </p>
           </div>
+          <Link
+            to="/about"
+            className="link-underline mt-14 inline-block text-[10px] uppercase tracking-[0.3em]"
+          >
+            Read our story
+          </Link>
         </Reveal>
       </section>
 
       {/* Best sellers */}
-      <section className="w-full py-28 sm:py-40">
+      <section className="w-full py-32 sm:py-48">
         <div className="mx-auto max-w-[1600px] px-5 sm:px-10">
-          <Reveal className="mb-4">
-            <p className="text-[9px] uppercase tracking-[0.45em] text-muted-foreground">Most wanted</p>
-            <h2 className="display-hd mt-5 text-4xl sm:text-6xl">Best Sellers</h2>
-          </Reveal>
-          <ProductCarousel products={bestSellers} />
+          <ProductRail
+            products={bestSellers}
+            eyebrow="Most wanted"
+            title="Best Sellers"
+            description="The pieces our community keeps coming back for."
+          />
         </div>
       </section>
 
       {/* Why Motion Inclined */}
-      <section className="border-t border-border px-5 py-28 sm:px-10 sm:py-40">
-        <Reveal className="mx-auto mb-16 max-w-[1600px] sm:mb-24">
-          <h2 className="display-hd text-4xl sm:text-6xl">Why Motion Inclined</h2>
+      <section className="border-t border-border px-5 py-32 sm:px-10 sm:py-48">
+        <Reveal className="mx-auto mb-20 max-w-[1600px] sm:mb-32">
+          <p className="eyebrow">The standard</p>
+          <h2 className="display-hd mt-6 text-4xl sm:text-6xl">Why Motion Inclined</h2>
         </Reveal>
-        <div className="mx-auto grid max-w-[1600px] gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mx-auto grid max-w-[1600px] gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-5">
           {REASONS.map((r, i) => (
             <Reveal key={r.title} delay={i * 80}>
-              <r.icon className="h-5 w-5 text-foreground" strokeWidth={1.2} />
+              <span className="text-[10px] tabular-nums tracking-[0.3em] text-muted-foreground">
+                0{i + 1}
+              </span>
+              <r.icon className="mt-6 h-5 w-5 text-foreground" strokeWidth={1.2} />
               <h3 className="mt-6 text-[11px] uppercase tracking-[0.28em]">{r.title}</h3>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{r.copy}</p>
             </Reveal>
@@ -129,21 +181,25 @@ function Index() {
           src={lifestyle}
           alt="Close detail of Motion Inclined heavyweight cotton garment"
           loading="lazy"
+          decoding="async"
           width={1600}
           height={1200}
-          className="h-[70vh] min-h-[440px] w-full object-cover"
+          className="h-[80vh] min-h-[480px] w-full object-cover"
         />
-        <div className="absolute inset-0 bg-foreground/35" />
+        <div className="absolute inset-0 bg-foreground/40" />
         <Reveal className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-          <h2 className="display-hd max-w-3xl text-4xl text-background sm:text-7xl">
-            Wear your ambition.
+          <p className="text-[9px] uppercase tracking-[0.45em] text-background/70">Drop 001</p>
+          <h2 className="display-hd mt-8 max-w-3xl text-5xl text-background sm:text-8xl">
+            Wear your
+            <br />
+            <span className="font-serif-display font-light italic">ambition.</span>
           </h2>
-          <p className="mt-6 text-sm tracking-wide text-background/85">
+          <p className="mt-8 text-sm tracking-wide text-background/85">
             Every stitch represents progress.
           </p>
           <Link
             to="/shop"
-            className="mt-10 rounded-full border border-background/70 px-8 py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:bg-background hover:text-foreground"
+            className="mt-12 rounded-full bg-background px-10 py-4 text-[10px] uppercase tracking-[0.3em] text-foreground transition-all duration-500 hover:scale-[1.03]"
           >
             Shop the collection
           </Link>
