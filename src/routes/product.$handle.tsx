@@ -384,22 +384,25 @@ function ProductPage() {
       {/* Reviews */}
       <section className="mx-auto w-full max-w-[1600px] px-5 py-24 sm:px-10 sm:py-36">
         <Reveal className="mb-14">
-          <h2 className="display-hd text-3xl sm:text-5xl">Customer Reviews</h2>
+          <p className="eyebrow">Community</p>
+          <h2 className="display-hd mt-6 text-3xl sm:text-5xl">Customer Reviews</h2>
         </Reveal>
-        <div className="grid gap-10 sm:grid-cols-3">
-          {REVIEWS.map((r, i) => (
-            <Reveal key={r.name} delay={i * 90} className="rounded-3xl border border-border p-8">
-              <div className="flex gap-0.5">
-                {Array.from({ length: r.stars }).map((_, s) => (
-                  <Star key={s} className="h-3 w-3 fill-foreground text-foreground" strokeWidth={0} />
-                ))}
-              </div>
-              <p className="mt-6 text-sm leading-loose text-muted-foreground">"{r.text}"</p>
-              <p className="mt-6 text-[9px] uppercase tracking-[0.3em]">{r.name}</p>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal className="rounded-3xl border border-dashed border-border px-8 py-16 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em]">No reviews yet</p>
+          <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Own this piece? Share your experience with us on WhatsApp and we'll publish it here.
+          </p>
+          <a
+            href="https://wa.me/2347043602465"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-block rounded-full border border-foreground px-8 py-3.5 text-[10px] uppercase tracking-[0.3em] transition-all duration-500 hover:bg-foreground hover:text-background"
+          >
+            Leave a review
+          </a>
+        </Reveal>
       </section>
+
 
       {related.length > 0 && (
         <section className="mx-auto w-full max-w-[1600px] border-t border-border px-5 py-24 sm:px-10 sm:py-36">
