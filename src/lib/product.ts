@@ -34,7 +34,7 @@ const COLOR_MAP: Record<string, string> = {
   brown: "#6b4a2f",
   grey: "#9b9691",
   gray: "#9b9691",
-  denim: "#4a6customary",
+  denim: "#4a6a8c",
 };
 
 export function colorSwatch(value: string): string {
