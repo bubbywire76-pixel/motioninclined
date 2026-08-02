@@ -257,16 +257,14 @@ function ProductPage() {
             Motion Inclined
           </p>
           <h1 className="display-hd mt-5 text-3xl sm:text-5xl">{product.title}</h1>
-          <div className="mt-5 flex items-center gap-3">
-            <div className="flex gap-0.5">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <Star key={i} className="h-3 w-3 fill-foreground text-foreground" strokeWidth={0} />
-              ))}
-            </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {REVIEWS.length} reviews
-            </span>
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span>Drop 001</span>
+            <span aria-hidden="true">·</span>
+            <span>Limited run</span>
+            <span aria-hidden="true">·</span>
+            <span>Free shipping over ₦100,000</span>
           </div>
+
           <p className="mt-6 text-lg tracking-tight">{formatPrice(price)}</p>
 
           <div className="mt-10 space-y-7">
