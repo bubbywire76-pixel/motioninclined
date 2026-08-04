@@ -155,7 +155,10 @@ export function Header() {
         <div className="mx-auto grid h-16 max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:h-20 sm:px-10">
           <nav className="hidden min-w-0 items-center gap-5 whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.2em] lg:flex xl:gap-7 xl:text-[10px] xl:tracking-[0.26em]">
             {LINKS.map((l) => (
-              <div key={l.label} className="group relative py-6">
+              <div
+                key={l.label}
+                className={`group relative py-6 ${l.label === "Home" ? "hidden xl:block" : ""}`}
+              >
                 <Link
                   to={l.to}
                   className="inline-flex items-center gap-1.5 opacity-75 transition-opacity duration-300 hover:opacity-100"
