@@ -157,7 +157,7 @@ export function Header() {
             {LINKS.map((l) => (
               <div
                 key={l.label}
-                className={`group relative py-6 ${l.label === "Home" ? "hidden xl:block" : ""}`}
+                className={`group relative py-6 ${l.label === "Home" ? "hidden 2xl:block" : ""}`}
               >
                 <Link
                   to={l.to}
