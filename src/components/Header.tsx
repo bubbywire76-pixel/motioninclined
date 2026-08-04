@@ -153,7 +153,7 @@ export function Header() {
         }`}
       >
         <div className="mx-auto grid h-16 max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:h-20 sm:px-10">
-          <nav className="hidden items-center gap-8 text-[10px] font-medium uppercase tracking-[0.28em] lg:flex">
+          <nav className="hidden min-w-0 items-center gap-5 whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.2em] lg:flex xl:gap-7 xl:text-[10px] xl:tracking-[0.26em]">
             {LINKS.map((l) => (
               <div key={l.label} className="group relative py-6">
                 <Link
@@ -197,7 +197,7 @@ export function Header() {
 
           <Link
             to="/"
-            className="justify-self-center text-[11px] font-semibold uppercase tracking-[0.5em] transition-opacity hover:opacity-60 sm:text-[13px] sm:tracking-[0.6em]"
+            className="justify-self-center whitespace-nowrap px-4 text-[11px] font-semibold uppercase tracking-[0.5em] transition-opacity hover:opacity-60 sm:text-[13px] sm:tracking-[0.6em]"
           >
             Motion Inclined
           </Link>
