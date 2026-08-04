@@ -20,6 +20,7 @@ import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CollectionsRouteImport } from './routes/collections'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
@@ -79,6 +80,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsRoute = CollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -98,6 +104,7 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/collections': typeof CollectionsRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/collections': typeof CollectionsRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/collections': typeof CollectionsRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/collections'
     | '/contact'
     | '/faq'
     | '/journal'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/collections'
     | '/contact'
     | '/faq'
     | '/journal'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/collections'
     | '/contact'
     | '/faq'
     | '/journal'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CollectionsRoute: typeof CollectionsRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   JournalRoute: typeof JournalRoute
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections': {
+      id: '/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof CollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -318,6 +338,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CollectionsRoute: CollectionsRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   JournalRoute: JournalRoute,
