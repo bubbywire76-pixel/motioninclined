@@ -40,7 +40,7 @@ function AccountPage() {
 
       <div className="mt-20 grid gap-6 sm:grid-cols-2">
         {CARDS.map((c, i) => (
-          <Reveal key={c.title} style={{ transitionDelay: `${i * 70}ms` }}>
+          <Reveal key={c.title} delay={i * 70}>
             <Link
               to={c.to}
               className="group block rounded-[24px] border border-border p-10 transition-colors duration-500 hover:border-foreground"
