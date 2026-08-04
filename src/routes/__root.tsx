@@ -124,13 +124,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   useCartSync();
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1">
+        <main className={`flex-1 ${pathname === "/" ? "" : "pt-[104px] sm:pt-[120px]"}`}>
           <Outlet />
         </main>
         <Footer />
@@ -139,3 +140,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
