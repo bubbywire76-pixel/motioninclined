@@ -24,6 +24,7 @@ const LINKS: NavLink[] = [
       { to: "/shop", label: "Accessories", caption: "Finishing pieces" },
     ],
   },
+  { to: "/about", label: "About" },
   {
     to: "/collections",
     label: "Collections",
@@ -33,8 +34,6 @@ const LINKS: NavLink[] = [
       { to: "/collections", label: "Motion Denim", caption: "Custom two-piece" },
     ],
   },
-  { to: "/about", label: "About" },
-  { to: "/journal", label: "Journal" },
   { to: "/contact", label: "Contact" },
 ];
 
