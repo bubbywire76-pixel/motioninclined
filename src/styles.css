@@ -50,6 +50,7 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-cream: var(--cream);
   --color-ink: var(--ink);
+  --color-gold: var(--gold);
 }
 
 :root {
