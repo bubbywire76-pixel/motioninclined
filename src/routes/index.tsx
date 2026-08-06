@@ -127,12 +127,11 @@ function Index() {
             <span className="font-serif-display font-light italic">Clothing.</span>
           </h2>
           <div className="mx-auto mt-16 max-w-xl space-y-6 text-base leading-[1.9] text-muted-foreground sm:text-lg">
-            <p>Motion isn't just movement.</p>
-            <p>It's choosing discipline. It's choosing progress. It's choosing growth.</p>
             <p>
-              Motion Inclined was built for individuals who understand that success belongs to those
-              who keep moving.
+              Motion Inclined is more than clothing. It represents movement, ambition, confidence,
+              and the pursuit of excellence.
             </p>
+            <p>Every collection is created for people who never stop moving forward.</p>
           </div>
           <Link
             to="/about"
@@ -199,7 +198,7 @@ function Index() {
           </p>
           <Link
             to="/shop"
-            className="mt-12 rounded-full bg-background px-10 py-4 text-[10px] uppercase tracking-[0.3em] text-foreground transition-all duration-500 hover:scale-[1.03]"
+            className="mt-12 rounded-full bg-background px-10 py-4 text-[10px] uppercase tracking-[0.3em] text-foreground transition-all duration-500 hover:scale-[1.03] hover:bg-gold hover:text-ink"
           >
             Shop the collection
           </Link>

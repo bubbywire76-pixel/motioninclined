@@ -11,7 +11,6 @@ const COLUMNS = [
       { to: "/shop", label: "Shop" },
       { to: "/collections", label: "Collections" },
       { to: "/about", label: "About" },
-      { to: "/journal", label: "Journal" },
       { to: "/contact", label: "Contact" },
     ],
   },
@@ -28,8 +27,10 @@ const COLUMNS = [
   {
     title: "Legal",
     links: [
-      { to: "/privacy", label: "Privacy" },
-      { to: "/terms", label: "Terms" },
+      { to: "/shipping", label: "Shipping Policy" },
+      { to: "/returns", label: "Returns Policy" },
+      { to: "/privacy", label: "Privacy Policy" },
+      { to: "/terms", label: "Terms & Conditions" },
     ],
   },
 ] as const;
@@ -77,10 +78,10 @@ export function Footer() {
       <div className="mx-auto max-w-[1600px] px-6 py-24 sm:px-10 sm:py-32">
         <div className="grid gap-16 lg:grid-cols-[1.5fr_repeat(3,0.8fr)_1.3fr] lg:gap-12">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.5em]">Motion Inclined</p>
-            <p className="mt-7 max-w-xs text-sm leading-loose text-muted-foreground">
-              More than clothing. A movement for people who refuse to stand still —
-              <span className="font-serif-display italic"> move with purpose.</span>
+            <p className="text-[12px] uppercase tracking-[0.5em]">Motion Inclined™</p>
+            <p className="font-serif-display mt-4 text-2xl italic text-gold">Luxury in Motion</p>
+            <p className="mt-6 max-w-xs text-sm leading-loose text-muted-foreground">
+              Timeless luxury streetwear for individuals who move with purpose.
             </p>
             <div className="mt-9 flex items-center gap-5 text-foreground/70">
               {SOCIALS.map(({ href, label, Icon }) => (
@@ -90,7 +91,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="transition-opacity duration-300 hover:opacity-50"
+                  className="hover-gold transition-opacity duration-300"
                 >
                   <Icon className="h-4 w-4" strokeWidth={1.3} />
                 </a>
@@ -108,7 +109,7 @@ export function Footer() {
                   <li key={l.label}>
                     <Link
                       to={l.to}
-                      className="link-underline text-sm text-foreground/80 transition-opacity hover:opacity-60"
+                      className="link-underline hover-gold text-sm text-foreground/80"
                     >
                       {l.label}
                     </Link>
@@ -140,7 +141,7 @@ export function Footer() {
               />
               <button
                 type="submit"
-                className="rounded-full bg-foreground py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity duration-300 hover:opacity-85"
+                className="rounded-full bg-foreground py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-colors duration-500 hover:bg-gold hover:text-ink"
               >
                 Subscribe
               </button>
@@ -150,13 +151,13 @@ export function Footer() {
 
         <div className="mt-24 flex flex-col gap-8 border-t border-border pt-10 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-[9px] uppercase tracking-[0.4em] text-muted-foreground">
-            © {new Date().getFullYear()} Motion Inclined. All rights reserved.
+            © 2026 Motion Inclined. All Rights Reserved.
           </p>
           <div className="flex flex-wrap gap-6 text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-            <a href="mailto:bubbywire76@gmail.com" className="hover:opacity-60">
+            <a href="mailto:bubbywire76@gmail.com" className="hover-gold">
               bubbywire76@gmail.com
             </a>
-            <a href="https://wa.me/2347043602465" className="hover:opacity-60">
+            <a href="https://wa.me/2347043602465" className="hover-gold">
               +234 704 360 2465
             </a>
           </div>
