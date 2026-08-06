@@ -14,6 +14,11 @@ export function isLimited(p: ShopifyProduct) {
   return false;
 }
 
+export function isComingSoon(p: ShopifyProduct) {
+  const tags = (p.node.tags || []).map((t) => t.toLowerCase().replace(/-/g, " "));
+  return tags.some((t) => t.includes("coming soon"));
+}
+
 // Inventory is not tracked in this store — every published piece is orderable.
 export function isSoldOut(_p: ShopifyProduct) {
   return false;

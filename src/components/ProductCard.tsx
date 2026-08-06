@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useCartStore } from "@/stores/cartStore";
 import { useWishlistStore } from "@/stores/wishlistStore";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
-import { colorOptions, colorSwatch, isLimited, isNewProduct, isSoldOut, sizeOption } from "@/lib/product";
+import { colorOptions, colorSwatch, isComingSoon, isLimited, isNewProduct, isSoldOut, sizeOption } from "@/lib/product";
 import { QuickView } from "./QuickView";
 
 interface ProductCardProps {
@@ -33,6 +33,7 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
   const hasSizes = !!sizes && sizes.values.length > 1;
   const colors = colorOptions(product);
   const soldOut = isSoldOut(product);
+  const comingSoon = isComingSoon(product);
 
   const handleQuickAdd = async (e: React.MouseEvent, sizeValue?: string) => {
     e.preventDefault();
@@ -100,7 +101,9 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
             )}
 
             <div className="pointer-events-none absolute left-4 top-4 flex flex-col items-start gap-2">
-              {soldOut ? (
+              {comingSoon ? (
+                <Badge label="Coming soon" muted />
+              ) : soldOut ? (
                 <Badge label="Sold out" muted />
               ) : (
                 <>
@@ -162,7 +165,11 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
       </div>
 
       <div className="mt-4">
-        {soldOut ? (
+        {comingSoon ? (
+          <div className="flex w-full items-center justify-center rounded-full border border-border py-3 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Coming soon
+          </div>
+        ) : soldOut ? (
           <div className="flex w-full items-center justify-center rounded-full border border-border py-3 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
             Sold out
           </div>
@@ -182,7 +189,7 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
                   onClick={(e) => handleQuickAdd(e, size)}
                   disabled={!!adding || unavailable}
                   aria-label={`Add ${product.node.title} size ${size} to cart`}
-                  className="flex items-center justify-center rounded-full border border-border py-2.5 text-[10px] uppercase tracking-[0.15em] transition-all duration-300 hover:border-foreground hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-30"
+                  className="flex items-center justify-center rounded-full border border-border py-2.5 text-[10px] uppercase tracking-[0.15em] transition-all duration-300 hover:border-gold hover:bg-gold hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   {isAdding ? <Loader2 className="h-3 w-3 animate-spin" /> : size}
                 </button>
@@ -193,7 +200,7 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
           <button
             onClick={(e) => handleQuickAdd(e)}
             disabled={!!adding}
-            className="flex w-full items-center justify-center rounded-full bg-foreground py-3 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-300 hover:opacity-85 disabled:opacity-50"
+            className="flex w-full items-center justify-center rounded-full bg-foreground py-3 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:bg-gold hover:text-ink disabled:opacity-50"
           >
             {adding ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to cart"}
           </button>
