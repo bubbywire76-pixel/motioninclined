@@ -59,7 +59,7 @@ const REASONS = [
 
 const MARQUEE = [
   "MOVE WITH PURPOSE",
-  "DROP 001",
+  "CHAPTER 37",
   "LIMITED RUNS",
   "STAY INCLINED",
   "MADE FOR MOTION",
@@ -81,7 +81,7 @@ function Index() {
       <section className="mx-auto w-full max-w-[1600px] px-5 py-32 sm:px-10 sm:py-48" id="shop">
         <Reveal className="mb-20 flex flex-col gap-8 sm:mb-32 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">
-            <p className="eyebrow">Drop 001</p>
+            <p className="eyebrow">Chapter 37</p>
             <h2 className="display-hd mt-6 text-[13vw] leading-[0.92] sm:text-7xl">
               Featured
               <br />
@@ -187,7 +187,7 @@ function Index() {
         />
         <div className="absolute inset-0 bg-foreground/40" />
         <Reveal className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-          <p className="text-[9px] uppercase tracking-[0.45em] text-background/70">Drop 001</p>
+          <p className="text-[9px] uppercase tracking-[0.45em] text-background/70">Chapter 37</p>
           <h2 className="display-hd mt-8 max-w-3xl text-5xl text-background sm:text-8xl">
             Wear your
             <br />

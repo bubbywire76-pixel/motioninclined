@@ -19,7 +19,7 @@ const productsQueryOptions = {
 };
 
 const DESCRIPTION =
-  "Browse the full Motion Inclined collection — Drop 001 tees, outerwear and accessories. Limited runs, premium materials, designed with purpose.";
+  "Browse the full Motion Inclined collection — Chapter 37 tees, outerwear and accessories. Limited runs, premium materials, designed with purpose.";
 
 export const Route = createFileRoute("/shop")({
   loader: async ({ context }) => {
@@ -27,9 +27,9 @@ export const Route = createFileRoute("/shop")({
   },
   head: () => ({
     meta: [
-      { title: "Shop Drop 001 — Motion Inclined" },
+      { title: "Shop Chapter 37 — Motion Inclined" },
       { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: "Shop Drop 001 — Motion Inclined" },
+      { property: "og:title", content: "Shop Chapter 37 — Motion Inclined" },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -146,7 +146,7 @@ function ShopPage() {
       <section className="relative w-full overflow-hidden bg-muted">
         <img
           src={banner}
-          alt="Motion Inclined Drop 001 collection — heavyweight cotton detail"
+          alt="Motion Inclined Chapter 37 collection — heavyweight cotton detail"
           width={1600}
           height={1200}
           className="h-[46vh] min-h-[320px] w-full object-cover sm:h-[62vh]"
@@ -154,7 +154,7 @@ function ShopPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/25 to-transparent" />
         <div className="absolute inset-0 mx-auto flex w-full max-w-[1600px] flex-col justify-end px-5 pb-12 sm:px-10 sm:pb-20">
           <p className="animate-fade-up text-[9px] uppercase tracking-[0.45em] text-background/80">
-            Collection 01 — Drop 001
+            Collection 01 — Chapter 37
           </p>
           <h1
             className="animate-fade-up display-hd mt-5 max-w-3xl text-[13vw] text-background sm:text-7xl"
