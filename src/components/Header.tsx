@@ -29,7 +29,7 @@ const LINKS: NavLink[] = [
     to: "/collections",
     label: "Collections",
     menu: [
-      { to: "/collections", label: "Drop 001", caption: "Essentials, limited run" },
+      { to: "/collections", label: "Chapter 37", caption: "Essentials, limited run" },
       { to: "/collections", label: "Faith Series", caption: "Believe · Pray · Growth" },
       { to: "/collections", label: "Motion Denim", caption: "Custom two-piece" },
     ],

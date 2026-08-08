@@ -5,7 +5,7 @@ import banner from "@/assets/lifestyle-editorial.jpg";
 import hero from "@/assets/hero-lifestyle.jpg";
 
 const DESCRIPTION =
-  "Explore Motion Inclined collections — Drop 001 essentials, the Faith Series and Motion Denim. Limited runs, premium materials, designed with purpose.";
+  "Explore Motion Inclined collections — Chapter 37 essentials, the Faith Series and Motion Denim. Limited runs, premium materials, designed with purpose.";
 
 export const Route = createFileRoute("/collections")({
   head: () => ({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/collections")({
 
 const COLLECTIONS = [
   {
-    name: "Drop 001",
+    name: "Chapter 37",
     caption: "Essentials — limited run",
     copy: "The foundation. Heavyweight jersey, quiet detailing, built to outlast a season.",
     image: hero,

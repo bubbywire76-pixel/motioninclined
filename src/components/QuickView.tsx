@@ -93,7 +93,7 @@ export function QuickView({ product, open, onOpenChange }: QuickViewProps) {
 
         <div className="flex flex-col justify-center gap-6 p-8 sm:p-12">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.45em] text-muted-foreground">Drop 001</p>
+            <p className="text-[9px] uppercase tracking-[0.45em] text-muted-foreground">Chapter 37</p>
             <h2 className="display-hd mt-4 text-2xl sm:text-3xl">{product.node.title}</h2>
             <p className="mt-3 text-[13px] tabular-nums text-muted-foreground">
               {formatPrice(variant?.price.amount ?? product.node.priceRange.minVariantPrice.amount)}

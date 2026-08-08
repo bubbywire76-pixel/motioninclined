@@ -116,7 +116,7 @@ const FAQ = [
   },
   {
     q: "Will this piece restock?",
-    a: "Drop 001 is a limited run. Once a size sells out it rarely returns — join the newsletter for restock alerts.",
+    a: "Chapter 37 is a limited run. Once a size sells out it rarely returns — join the newsletter for restock alerts.",
   },
 ];
 
@@ -341,7 +341,7 @@ function ProductPage() {
           <p className="eyebrow">Motion Inclined</p>
           <h1 className="display-hd mt-6 text-4xl sm:text-6xl">{product.title}</h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <span>Drop 001</span>
+            <span>Chapter 37</span>
             <span aria-hidden="true">·</span>
             <span>Limited run</span>
             <span aria-hidden="true">·</span>
