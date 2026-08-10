@@ -261,6 +261,9 @@ function ProductPage() {
   ];
 
   const price = selectedVariant?.price.amount ?? product.priceRange.minVariantPrice.amount;
+  const comingSoon = ((product as { tags?: string[] }).tags || []).some((t) =>
+    t.toLowerCase().replace(/-/g, " ").includes("coming soon"),
+  );
   const soldOut = selectedVariant?.availableForSale === false;
 
   return (
