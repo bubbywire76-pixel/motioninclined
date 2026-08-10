@@ -629,13 +629,19 @@ function ProductPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={isLoading || soldOut}
-            className="shrink-0 rounded-full bg-foreground px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
-          >
-            {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to cart"}
-          </button>
+          {comingSoon ? (
+            <span className="shrink-0 rounded-full border border-border px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Coming soon
+            </span>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              disabled={isLoading || soldOut}
+              className="shrink-0 rounded-full bg-foreground px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
+            >
+              {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Order now"}
+            </button>
+          )}
         </div>
       </div>
 
