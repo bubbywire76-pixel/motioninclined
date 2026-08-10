@@ -82,19 +82,22 @@ function CollectionsPage() {
           {CHAPTER_37_COMING_SOON.map((piece, i) => (
             <Reveal key={piece.name} delay={i * 80}>
               <article className="group flex flex-col">
-                <div className="relative overflow-hidden rounded-[24px] bg-muted">
-                  <img
-                    src={piece.image}
-                    alt={piece.alt}
-                    loading="lazy"
-                    decoding="async"
-                    className="aspect-[4/5] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
-                  />
-                  <span className="absolute left-4 top-4 rounded-full bg-background/85 px-3 py-1.5 text-[9px] uppercase tracking-[0.25em] backdrop-blur-md">
-                    Coming soon
-                  </span>
-                </div>
-                <h3 className="display-hd mt-8 text-2xl sm:text-3xl">{piece.name}</h3>
+                <Link to="/product/$handle" params={{ handle: piece.handle }}>
+                  <div className="relative overflow-hidden rounded-[24px] bg-muted">
+                    <img
+                      src={piece.image}
+                      alt={piece.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[4/5] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+                    />
+                    <span className="absolute left-4 top-4 rounded-full bg-background/85 px-3 py-1.5 text-[9px] uppercase tracking-[0.25em] backdrop-blur-md">
+                      Coming soon
+                    </span>
+                  </div>
+                  <h3 className="display-hd mt-8 text-2xl sm:text-3xl">{piece.name}</h3>
+                  <p className="mt-3 text-[12px] tabular-nums text-muted-foreground">{piece.price}</p>
+                </Link>
                 <p className="mt-5 max-w-md text-sm leading-loose text-muted-foreground">
                   {piece.copy}
                 </p>
