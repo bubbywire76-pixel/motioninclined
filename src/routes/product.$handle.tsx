@@ -261,6 +261,9 @@ function ProductPage() {
   ];
 
   const price = selectedVariant?.price.amount ?? product.priceRange.minVariantPrice.amount;
+  const comingSoon = ((product as { tags?: string[] }).tags || []).some((t) =>
+    t.toLowerCase().replace(/-/g, " ").includes("coming soon"),
+  );
   const soldOut = selectedVariant?.availableForSale === false;
 
   return (
@@ -392,19 +395,25 @@ function ProductPage() {
           </div>
 
           <div ref={ctaRef} className="mt-12 flex items-center gap-3">
-            <button
-              onClick={handleAddToCart}
-              disabled={isLoading || soldOut}
-              className="flex-1 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:opacity-85 disabled:opacity-40"
-            >
-              {isLoading ? (
-                <Loader2 className="mx-auto h-4 w-4 animate-spin" />
-              ) : soldOut ? (
-                "Sold out"
-              ) : (
-                "Add to cart"
-              )}
-            </button>
+            {comingSoon ? (
+              <div className="flex flex-1 items-center justify-center rounded-full border border-border py-4 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                Coming soon
+              </div>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                disabled={isLoading || soldOut}
+                className="flex-1 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:opacity-85 disabled:opacity-40"
+              >
+                {isLoading ? (
+                  <Loader2 className="mx-auto h-4 w-4 animate-spin" />
+                ) : soldOut ? (
+                  "Sold out"
+                ) : (
+                  "Order now"
+                )}
+              </button>
+            )}
             <button
               onClick={() => toggleWishlist(product.handle)}
               aria-label="Save to wishlist"
@@ -620,13 +629,19 @@ function ProductPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={isLoading || soldOut}
-            className="shrink-0 rounded-full bg-foreground px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
-          >
-            {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to cart"}
-          </button>
+          {comingSoon ? (
+            <span className="shrink-0 rounded-full border border-border px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Coming soon
+            </span>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              disabled={isLoading || soldOut}
+              className="shrink-0 rounded-full bg-foreground px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
+            >
+              {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Order now"}
+            </button>
+          )}
         </div>
       </div>
 
