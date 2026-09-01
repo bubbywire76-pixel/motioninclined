@@ -4,14 +4,14 @@ import growth from "@/assets/growth-tee.jpg";
 import believe from "@/assets/believe-tee.jpg";
 import pray from "@/assets/pray-tee.jpg";
 import polo from "@/assets/stay-inclined-polo.jpeg";
-import human from "@/assets/human-being.jpeg";
+import inMotionTeeAsset from "@/assets/in-motion-tee-front.jpg.asset.json";
 import keepMoving from "@/assets/keep-moving-forward.jpeg";
 
 const TILES = [
   { src: growth, alt: "Growth Tee worn on the street" },
   { src: polo, alt: "Stay Inclined striped polo detail" },
   { src: believe, alt: "Believe Tee lotus graphic" },
-  { src: human, alt: "Human Being long sleeve back print" },
+  { src: inMotionTeeAsset.url, alt: "IN MOTION TEE front with rhinestone runner graphic" },
   { src: pray, alt: "Pray ringer tee close up" },
   { src: keepMoving, alt: "Keep Moving Forward ringer tee" },
 ];

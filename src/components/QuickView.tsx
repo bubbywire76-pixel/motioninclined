@@ -133,7 +133,7 @@ export function QuickView({ product, open, onOpenChange }: QuickViewProps) {
               disabled={adding || !variant}
               className="flex w-full items-center justify-center rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-50"
             >
-              {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to cart"}
+              {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to Motion"}
             </button>
             <Link
               to="/product/$handle"
