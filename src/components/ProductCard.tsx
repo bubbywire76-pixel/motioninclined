@@ -202,7 +202,7 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
             disabled={!!adding}
             className="flex w-full items-center justify-center rounded-full bg-foreground py-3 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:bg-gold hover:text-ink disabled:opacity-50"
           >
-            {adding ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to cart"}
+            {adding ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to Motion"}
           </button>
         )}
       </div>

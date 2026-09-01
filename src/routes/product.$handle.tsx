@@ -346,7 +346,7 @@ function ProductPage() {
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <span>Chapter 37</span>
             <span aria-hidden="true">·</span>
-            <span>Limited run</span>
+            <span>Limited quantity</span>
             <span aria-hidden="true">·</span>
             <span>Free shipping over ₦100,000</span>
           </div>
@@ -410,7 +410,7 @@ function ProductPage() {
                 ) : soldOut ? (
                   "Sold out"
                 ) : (
-                  "Order now"
+                  "Add to Motion"
                 )}
               </button>
             )}
@@ -639,7 +639,7 @@ function ProductPage() {
               disabled={isLoading || soldOut}
               className="shrink-0 rounded-full bg-foreground px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
             >
-              {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Order now"}
+              {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to Motion"}
             </button>
           )}
         </div>
