@@ -8,6 +8,7 @@ import {
   Truck,
   RotateCcw,
   ShieldCheck,
+  Minus,
   Plus,
   X,
   Maximize2,
@@ -140,6 +141,9 @@ function ProductPage() {
 
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
+  const getCheckoutUrl = useCartStore((s) => s.getCheckoutUrl);
+  const snapshotPendingOrder = useCartStore((s) => s.snapshotPendingOrder);
+  const markCheckoutOpened = useCartStore((s) => s.markCheckoutOpened);
   const wishlisted = useWishlistStore((s) => s.handles.includes(product.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
 
@@ -152,7 +156,9 @@ function ProductPage() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const [showSticky, setShowSticky] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const eta = useMemo(deliveryWindow, []);
+  const isInMotionTee = product.title.toLowerCase() === "in motion tee";
 
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {};
@@ -165,6 +171,7 @@ function ProductPage() {
     const defaults: Record<string, string> = {};
     product.options.forEach((o) => (defaults[o.name] = o.values[0]));
     setSelectedOptions(defaults);
+    setQuantity(1);
   }, [product.handle, product.options]);
 
   useEffect(() => {
@@ -232,9 +239,27 @@ function ProductPage() {
       variantId: selectedVariant.id,
       variantTitle: selectedVariant.title,
       price: selectedVariant.price,
-      quantity: 1,
+      quantity,
       selectedOptions: selectedVariant.selectedOptions,
     });
+  };
+
+  const handleBuyNow = async () => {
+    if (!selectedVariant || soldOut) return;
+    const checkoutWindow = window.open("", "_blank", "noopener,noreferrer");
+    await handleAddToCart();
+    const checkoutUrl = getCheckoutUrl();
+    if (!checkoutUrl) {
+      checkoutWindow?.close();
+      return;
+    }
+    snapshotPendingOrder();
+    markCheckoutOpened();
+    if (checkoutWindow) {
+      checkoutWindow.location.href = checkoutUrl;
+    } else {
+      window.open(checkoutUrl, "_blank");
+    }
   };
 
   const sections = [
@@ -244,15 +269,19 @@ function ProductPage() {
     },
     {
       label: "Material Composition",
-      body: "240 GSM combed ring-spun cotton jersey. Reinforced shoulder taping, 1x1 ribbed collar with retention treatment, double-needle stitched hems.",
+      body: isInMotionTee
+        ? "Premium heavyweight cotton in a warm off-white ivory. Relaxed oversized silhouette with a clean crew neckline, structured sleeves and refined glass-diamond stone application."
+        : "240 GSM combed ring-spun cotton jersey. Reinforced shoulder taping, 1x1 ribbed collar with retention treatment, double-needle stitched hems.",
     },
     {
       label: "Care Instructions",
-      body: "Cold machine wash inside out with like colours. Do not bleach. Hang dry away from direct sunlight. Iron on the reverse of any print.",
+      body: isInMotionTee
+        ? "Cold machine wash inside out with like colours. Do not bleach. Hang dry away from direct sunlight. Iron on the reverse of the stone application."
+        : "Cold machine wash inside out with like colours. Do not bleach. Hang dry away from direct sunlight. Iron on the reverse of any print.",
     },
     {
       label: "Shipping",
-      body: `Dispatched within 48 hours from Lagos. Free nationwide shipping over ₦100,000. Estimated delivery ${eta}.`,
+      body: `Available now. Dispatched within 48 hours from Lagos. Free nationwide shipping over ₦100,000. Estimated delivery ${eta}.`,
     },
     {
       label: "Returns",
@@ -344,7 +373,7 @@ function ProductPage() {
           <p className="eyebrow">Motion Inclined</p>
           <h1 className="display-hd mt-6 text-4xl sm:text-6xl">{product.title}</h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <span>Chapter 37</span>
+            <span>{isInMotionTee ? "Drop 001" : "Chapter 37"}</span>
             <span aria-hidden="true">·</span>
             <span>Limited quantity</span>
             <span aria-hidden="true">·</span>
@@ -352,6 +381,11 @@ function ProductPage() {
           </div>
 
           <p className="mt-8 text-xl tracking-tight">{formatPrice(price)}</p>
+          {isInMotionTee && (
+            <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Luxury in motion.
+            </p>
+          )}
           <p className="mt-3 inline-flex items-center gap-2 text-[11px] text-muted-foreground">
             <Truck className="h-3.5 w-3.5" strokeWidth={1.3} />
             Estimated delivery {eta}
@@ -394,25 +428,53 @@ function ProductPage() {
             ))}
           </div>
 
+          <div className="mt-10 flex items-center justify-between border-y border-border py-4">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">Quantity</span>
+            <div className="flex items-center gap-4 rounded-full border border-border px-3 py-2">
+              <button
+                type="button"
+                onClick={() => setQuantity((value) => Math.max(1, value - 1))}
+                disabled={quantity === 1}
+                aria-label="Decrease quantity"
+                className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+              >
+                <Minus className="h-3 w-3" strokeWidth={1.4} />
+              </button>
+              <span className="w-5 text-center text-[11px] tabular-nums">{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity((value) => Math.min(10, value + 1))}
+                disabled={quantity === 10}
+                aria-label="Increase quantity"
+                className="text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+              >
+                <Plus className="h-3 w-3" strokeWidth={1.4} />
+              </button>
+            </div>
+          </div>
+
           <div ref={ctaRef} className="mt-12 flex items-center gap-3">
             {comingSoon ? (
               <div className="flex flex-1 items-center justify-center rounded-full border border-border py-4 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                 Coming soon
               </div>
             ) : (
-              <button
-                onClick={handleAddToCart}
-                disabled={isLoading || soldOut}
-                className="flex-1 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:opacity-85 disabled:opacity-40"
-              >
-                {isLoading ? (
-                  <Loader2 className="mx-auto h-4 w-4 animate-spin" />
-                ) : soldOut ? (
-                  "Sold out"
-                ) : (
-                  "Add to Motion"
-                )}
-              </button>
+              <div className="flex flex-1 flex-col gap-2 sm:flex-row">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isLoading || soldOut}
+                  className="flex-1 rounded-full border border-foreground py-4 text-[10px] uppercase tracking-[0.3em] transition-all duration-500 hover:bg-foreground hover:text-background disabled:opacity-40"
+                >
+                  {isLoading ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : soldOut ? "Sold out" : "Add to Cart"}
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  disabled={isLoading || soldOut}
+                  className="flex-1 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-all duration-500 hover:opacity-85 disabled:opacity-40"
+                >
+                  Buy Now
+                </button>
+              </div>
             )}
             <button
               onClick={() => toggleWishlist(product.handle)}
@@ -635,11 +697,11 @@ function ProductPage() {
             </span>
           ) : (
             <button
-              onClick={handleAddToCart}
+               onClick={handleAddToCart}
               disabled={isLoading || soldOut}
               className="shrink-0 rounded-full bg-foreground px-9 py-3.5 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
             >
-              {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to Motion"}
+               {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to Cart"}
             </button>
           )}
         </div>

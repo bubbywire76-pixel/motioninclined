@@ -3,7 +3,7 @@ import { toast } from "sonner";
 export function formatPrice(amount: string | number, _currencyCode?: string): string {
   const value = typeof amount === "string" ? parseFloat(amount) : amount;
   if (Number.isNaN(value)) return "";
-  return `NGN ${Math.round(value).toLocaleString("en-NG")}`;
+  return `₦${Math.round(value).toLocaleString("en-NG")}`;
 }
 
 export const SHOPIFY_API_VERSION = "2025-07";
