@@ -34,6 +34,7 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
   const colors = colorOptions(product);
   const soldOut = isSoldOut(product);
   const comingSoon = isComingSoon(product);
+  const isInMotionTee = product.node.title.toLowerCase() === "in motion tee";
 
   const handleQuickAdd = async (e: React.MouseEvent, sizeValue?: string) => {
     e.preventDefault();
@@ -100,18 +101,20 @@ export function ProductCard({ product, index = 0, priority = false }: ProductCar
               </div>
             )}
 
-            <div className="pointer-events-none absolute left-4 top-4 flex flex-col items-start gap-2">
-              {comingSoon ? (
-                <Badge label="Coming soon" muted />
-              ) : soldOut ? (
-                <Badge label="Sold out" muted />
-              ) : (
-                <>
-                  {isNewProduct(product) && <Badge label="New" />}
-                  {isLimited(product) && <Badge label="Limited" muted />}
-                </>
-              )}
-            </div>
+            {!isInMotionTee && (
+              <div className="pointer-events-none absolute left-4 top-4 flex flex-col items-start gap-2">
+                {comingSoon ? (
+                  <Badge label="Coming soon" muted />
+                ) : soldOut ? (
+                  <Badge label="Sold out" muted />
+                ) : (
+                  <>
+                    {isNewProduct(product) && <Badge label="New" />}
+                    {isLimited(product) && <Badge label="Limited" muted />}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </Link>
 
