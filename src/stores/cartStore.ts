@@ -47,6 +47,7 @@ interface CartStore {
   consumeOrderCompleted: () => void;
   markCheckoutOpened: () => void;
   clearCheckoutOpened: () => void;
+  completePaidOrder: (paidAt?: string) => void;
 }
 
 // TTL for a snapshotted pending order — after this, we don't promote it to lastOrder.
@@ -93,6 +94,26 @@ export const useCartStore = create<CartStore>()(
       consumeOrderCompleted: () => set({ orderJustCompleted: false }),
       markCheckoutOpened: () => set({ checkoutOpenedAt: Date.now() }),
       clearCheckoutOpened: () => set({ checkoutOpenedAt: null }),
+      completePaidOrder: (paidAt) => {
+        const { pendingOrder, items } = get();
+        const source = pendingOrder ?? (items.length > 0 ? {
+          items: items.map((item) => ({ ...item })),
+          total: items.reduce((sum, item) => sum + parseFloat(item.price.amount) * item.quantity, 0),
+          currencyCode: items[0]?.price.currencyCode || "NGN",
+          completedAt: Date.now(),
+        } : null);
+        if (!source) return;
+        set({
+          lastOrder: { ...source, completedAt: paidAt ? new Date(paidAt).getTime() : Date.now() },
+          pendingOrder: null,
+          pendingOrderStartedAt: null,
+          orderJustCompleted: false,
+          checkoutOpenedAt: null,
+          items: [],
+          cartId: null,
+          checkoutUrl: null,
+        });
+      },
 
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();

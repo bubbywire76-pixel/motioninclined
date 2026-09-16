@@ -8,6 +8,6 @@
 
 ## Nigerian checkout
 
-- [ ] Add secure Paystack NGN payment initialization and verification.
-- [ ] Add buyer contact and delivery details to the cart checkout.
-- [ ] Confirm successful payments on the existing order confirmation page and preserve abandoned carts.
+- [x] Add secure Paystack NGN payment initialization and verification.
+- [x] Add buyer contact and delivery details to the cart checkout.
+- [x] Confirm successful payments on the existing order confirmation page and preserve abandoned carts.
