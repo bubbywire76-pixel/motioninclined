@@ -10,4 +10,5 @@
 
 - [x] Add secure Paystack NGN payment initialization and verification.
 - [x] Add buyer contact and delivery details to the cart checkout.
-- [x] Confirm successful payments on the existing order confirmation page and preserve abandoned carts.
+- [ ] Verify the payment server-side, create a Shopify order with the buyer and delivery details, and show the paid order on the confirmation page.
+- [ ] Preserve cart contents on failed or abandoned payments and clear them only after the Shopify order is created.
