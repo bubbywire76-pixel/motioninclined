@@ -24,6 +24,8 @@ export interface OrderSnapshot {
   total: number;
   currencyCode: string;
   completedAt: number;
+  paymentReference?: string;
+  shopifyOrderName?: string | null;
 }
 
 interface CartStore {
@@ -47,7 +49,11 @@ interface CartStore {
   consumeOrderCompleted: () => void;
   markCheckoutOpened: () => void;
   clearCheckoutOpened: () => void;
-  completePaidOrder: (paidAt?: string) => void;
+  completePaidOrder: (details?: {
+    paidAt?: string;
+    paymentReference?: string;
+    shopifyOrderName?: string | null;
+  }) => void;
 }
 
 // TTL for a snapshotted pending order — after this, we don't promote it to lastOrder.
@@ -94,7 +100,7 @@ export const useCartStore = create<CartStore>()(
       consumeOrderCompleted: () => set({ orderJustCompleted: false }),
       markCheckoutOpened: () => set({ checkoutOpenedAt: Date.now() }),
       clearCheckoutOpened: () => set({ checkoutOpenedAt: null }),
-      completePaidOrder: (paidAt) => {
+      completePaidOrder: (details) => {
         const { pendingOrder, items } = get();
         const source = pendingOrder ?? (items.length > 0 ? {
           items: items.map((item) => ({ ...item })),
@@ -104,7 +110,12 @@ export const useCartStore = create<CartStore>()(
         } : null);
         if (!source) return;
         set({
-          lastOrder: { ...source, completedAt: paidAt ? new Date(paidAt).getTime() : Date.now() },
+          lastOrder: {
+            ...source,
+            completedAt: details?.paidAt ? new Date(details.paidAt).getTime() : Date.now(),
+            paymentReference: details?.paymentReference,
+            shopifyOrderName: details?.shopifyOrderName,
+          },
           pendingOrder: null,
           pendingOrderStartedAt: null,
           orderJustCompleted: false,
