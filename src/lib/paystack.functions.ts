@@ -139,14 +139,17 @@ function variantNumericId(variantId: string) {
 
 function splitName(name: string) {
   const parts = name.trim().split(/\s+/);
-  return { first_name: parts[0] ?? name, last_name: parts.slice(1).join(" ") || parts[0] ?? name };
+  return { first_name: parts[0] ?? name, last_name: parts.slice(1).join(" ") || (parts[0] ?? name) };
 }
 
 async function createShopifyOrder(reference: string, amountInKobo: number, metadata: unknown, paidAt: string) {
   const details = paymentMetadataSchema.safeParse(metadata);
   if (!details.success) throw new Error("Payment details could not be confirmed. Please contact us.");
 
-  const priced = await priceCart(details.data.cart);
+  const priced = await priceCart(details.data.cart.map((item) => ({
+    variantId: item.variant_id,
+    quantity: item.quantity,
+  })));
   if (Math.round(priced.total * 100) !== amountInKobo) {
     throw new Error("The cart total changed before payment could be completed. Please contact us.");
   }
