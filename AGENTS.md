@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep AI Gateway calls and signed checkout-review validation in `*.server.ts` helpers invoked by `*.functions.ts` server functions, so secrets and approvals remain server-side.

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { checkCheckoutReviewToken } from "./checkout-review.server";
 
 const domain = "my-merch-shop-hsh8y.myshopify.com";
 const apiVersion = "2025-07";
@@ -17,6 +18,7 @@ const checkoutSchema = z.object({
   address: z.string().trim().min(8).max(240),
   city: z.string().trim().min(2).max(80),
   state: z.string().trim().min(2).max(80),
+  reviewToken: z.string().min(16).max(200),
   items: z.array(cartItemSchema).min(1).max(25),
 });
 
@@ -202,6 +204,9 @@ async function createShopifyOrder(reference: string, amountInKobo: number, metad
 export const initializePaystackCheckout = createServerFn({ method: "POST" })
   .inputValidator((input) => checkoutSchema.parse(input))
   .handler(async ({ data }) => {
+    if (!await checkCheckoutReviewToken(data)) {
+      return { ok: false as const, error: "Please review your delivery details again before payment." };
+    }
     const secretKey = process.env["PAYSTACK_SECRET_KEY"];
     if (!secretKey) return { ok: false as const, error: "Nigerian checkout is not configured yet." };
 
