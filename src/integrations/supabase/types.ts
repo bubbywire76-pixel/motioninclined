@@ -14,7 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_delivery_review_state: {
+        Row: {
+          blocked_status: number | null
+          denial_type: string | null
+          id: number
+          safe_message: string | null
+          updated_at: string
+        }
+        Insert: {
+          blocked_status?: number | null
+          denial_type?: string | null
+          id?: number
+          safe_message?: string | null
+          updated_at?: string
+        }
+        Update: {
+          blocked_status?: number | null
+          denial_type?: string | null
+          id?: number
+          safe_message?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
