@@ -53,6 +53,13 @@ export function CartDrawer() {
     if (isOpen) syncCart();
   }, [isOpen, syncCart]);
 
+  useEffect(() => {
+    setReviewError(null);
+    setReviewIssues([]);
+    setReviewToken(null);
+    setReviewedCheckoutKey(null);
+  }, [checkoutReviewKey]);
+
   const handleCheckout = () => {
     setCheckoutError(null);
     setCheckoutStep("details");
