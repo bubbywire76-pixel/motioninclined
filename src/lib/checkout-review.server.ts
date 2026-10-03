@@ -83,7 +83,9 @@ export async function verifyCheckoutReviewToken(
     return false;
   }
   const payload = `${expiresAt}.${canonicalCheckout(details, items)}`;
-  return crypto.subtle.verify("HMAC", await reviewSigningKey(), signatureBytes, new TextEncoder().encode(payload));
+  const signatureBuffer = new ArrayBuffer(signatureBytes.byteLength);
+  new Uint8Array(signatureBuffer).set(signatureBytes);
+  return crypto.subtle.verify("HMAC", await reviewSigningKey(), signatureBuffer, new TextEncoder().encode(payload));
 }
 
 type GatewayFailure = {

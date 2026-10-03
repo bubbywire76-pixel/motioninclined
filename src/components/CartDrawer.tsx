@@ -4,6 +4,7 @@ import { ShoppingBag, Minus, Plus, X, Loader2, Lock, Truck, RotateCcw, ArrowLeft
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice } from "@/lib/shopify";
 import { initializePaystackCheckout } from "@/lib/paystack.functions";
+import { reviewCheckoutDelivery } from "@/lib/checkout-review.functions";
 import { useServerFn } from "@tanstack/react-start";
 
 const FREE_SHIPPING_THRESHOLD = 100000;
@@ -13,8 +14,14 @@ export function CartDrawer() {
   const [checkoutStep, setCheckoutStep] = useState<"cart" | "details">("cart");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isStartingPayment, setIsStartingPayment] = useState(false);
+  const [isReviewingDelivery, setIsReviewingDelivery] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewIssues, setReviewIssues] = useState<string[]>([]);
+  const [reviewToken, setReviewToken] = useState<string | null>(null);
+  const [reviewedCheckoutKey, setReviewedCheckoutKey] = useState<string | null>(null);
   const [details, setDetails] = useState({ name: "", email: "", phone: "+234", address: "", city: "", state: "" });
   const startPaystackCheckout = useServerFn(initializePaystackCheckout);
+  const reviewCheckout = useServerFn(reviewCheckoutDelivery);
   const {
     items,
     isLoading,
@@ -33,10 +40,25 @@ export function CartDrawer() {
   );
   const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - totalPrice);
   const progress = Math.min(100, (totalPrice / FREE_SHIPPING_THRESHOLD) * 100);
+  const reviewItems = items.map((item) => ({
+    variantId: item.variantId,
+    productName: item.product.node.title,
+    variantTitle: item.variantTitle,
+    quantity: item.quantity,
+  }));
+  const checkoutReviewKey = JSON.stringify({ ...details, items: reviewItems });
+  const isReviewCurrent = Boolean(reviewToken && reviewedCheckoutKey === checkoutReviewKey);
 
   useEffect(() => {
     if (isOpen) syncCart();
   }, [isOpen, syncCart]);
+
+  useEffect(() => {
+    setReviewError(null);
+    setReviewIssues([]);
+    setReviewToken(null);
+    setReviewedCheckoutKey(null);
+  }, [checkoutReviewKey]);
 
   const handleCheckout = () => {
     setCheckoutError(null);
@@ -45,10 +67,42 @@ export function CartDrawer() {
 
   const handleDetailsChange = (field: keyof typeof details, value: string) => {
     setDetails((current) => ({ ...current, [field]: value }));
+    setReviewError(null);
+    setReviewIssues([]);
+    setReviewToken(null);
+    setReviewedCheckoutKey(null);
   };
 
-  const handlePaymentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleReviewDetails = async () => {
+    setReviewError(null);
+    setCheckoutError(null);
+    setReviewIssues([]);
+    setReviewToken(null);
+    setReviewedCheckoutKey(null);
+    setIsReviewingDelivery(true);
+    try {
+      const result = await reviewCheckout({ data: { ...details, items: reviewItems } });
+      if (!result.ok) {
+        setReviewError(result.error ?? "Delivery details could not be reviewed.");
+        return;
+      }
+      setReviewIssues(result.issues);
+      if (result.clear && result.reviewToken) {
+        setReviewToken(result.reviewToken);
+        setReviewedCheckoutKey(checkoutReviewKey);
+      }
+    } catch (error) {
+      setReviewError(error instanceof Error ? error.message : "Delivery details could not be reviewed.");
+    } finally {
+      setIsReviewingDelivery(false);
+    }
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!reviewToken || reviewedCheckoutKey !== checkoutReviewKey) {
+      setCheckoutError("Review your delivery details again before payment.");
+      return;
+    }
     setCheckoutError(null);
     setIsStartingPayment(true);
     try {
@@ -56,6 +110,7 @@ export function CartDrawer() {
         data: {
           ...details,
           items: items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+          reviewToken,
         },
       });
       if (!result.ok) {
@@ -120,7 +175,7 @@ export function CartDrawer() {
 
          <div className="flex min-h-0 flex-1 flex-col">
            {checkoutStep === "details" ? (
-             <form onSubmit={handlePaymentSubmit} className="flex min-h-0 flex-1 flex-col">
+              <form onSubmit={(event) => { event.preventDefault(); void handleReviewDetails(); }} className="flex min-h-0 flex-1 flex-col">
                <div className="flex-1 overflow-y-auto px-6 py-6">
                  <p className="text-sm leading-relaxed text-muted-foreground">
                    Pay securely in naira by card, bank transfer, or USSD. Your order is created in our store only after payment is confirmed.
@@ -147,21 +202,41 @@ export function CartDrawer() {
                      </label>
                    ))}
                  </div>
-                 {checkoutError && <p className="mt-5 text-sm text-destructive">{checkoutError}</p>}
+                  {reviewIssues.length > 0 && (
+                    <div aria-live="polite" className="mt-6 border-l-2 border-destructive pl-4">
+                      <p className="text-[10px] uppercase tracking-[0.22em]">Please check these details</p>
+                      <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-muted-foreground">
+                        {reviewIssues.map((issue, index) => <li key={`${index}-${issue}`}>{issue}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {isReviewCurrent && reviewIssues.length === 0 && (
+                    <p aria-live="polite" className="mt-5 text-sm text-muted-foreground">Delivery details reviewed. You can continue to payment.</p>
+                  )}
+                  {reviewError && <p role="alert" className="mt-5 text-sm text-destructive">{reviewError}</p>}
+                  {checkoutError && <p role="alert" className="mt-5 text-sm text-destructive">{checkoutError}</p>}
                </div>
                <div className="border-t border-border px-6 py-6">
                  <div className="flex items-baseline justify-between">
                    <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Total</span>
                    <span className="text-[15px] tabular-nums">{formatPrice(totalPrice)}</span>
                  </div>
-                 <button
-                   type="submit"
-                   disabled={isStartingPayment || isLoading || isSyncing}
-                   className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-50"
-                 >
-                   {isStartingPayment ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Lock className="h-3 w-3" strokeWidth={1.5} /> Pay securely with Paystack</>}
-                 </button>
-                 <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground">You will be taken to Paystack to complete payment.</p>
+                  <button
+                    type="submit"
+                    disabled={isReviewingDelivery || isStartingPayment || isLoading || isSyncing}
+                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-foreground py-4 text-[10px] uppercase tracking-[0.3em] transition-opacity hover:opacity-70 disabled:opacity-50"
+                  >
+                    {isReviewingDelivery ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Reviewing details</> : "Review delivery details"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePaymentSubmit}
+                    disabled={!isReviewCurrent || reviewIssues.length > 0 || isReviewingDelivery || isStartingPayment || isLoading || isSyncing}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-40"
+                  >
+                    {isStartingPayment ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Lock className="h-3 w-3" strokeWidth={1.5} /> Pay securely with Paystack</>}
+                  </button>
+                  <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground">Your delivery information is checked before secure payment.</p>
                </div>
              </form>
            ) : items.length === 0 ? (
