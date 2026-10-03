@@ -83,7 +83,7 @@ export function CartDrawer() {
     try {
       const result = await reviewCheckout({ data: { ...details, items: reviewItems } });
       if (!result.ok) {
-        setReviewError(result.error);
+        setReviewError(result.error ?? "Delivery details could not be reviewed.");
         return;
       }
       setReviewIssues(result.issues);
