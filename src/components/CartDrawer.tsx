@@ -96,7 +96,6 @@ export function CartDrawer() {
       setCheckoutError("Review your delivery details again before payment.");
       return;
     }
-    event.preventDefault();
     setCheckoutError(null);
     setIsStartingPayment(true);
     try {
