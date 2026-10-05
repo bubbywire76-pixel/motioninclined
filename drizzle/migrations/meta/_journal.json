@@ -8,6 +8,13 @@
       "when": 1790610994559,
       "tag": "0000_add_ai_delivery_review_state",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791231303781,
+      "tag": "0001_create_transfer_orders_and_denim_notifications",
+      "breakpoints": true
     }
   ]
 }
