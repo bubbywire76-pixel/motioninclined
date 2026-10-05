@@ -38,6 +38,81 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_transfer_orders: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          id: string
+          items: Json
+          order_number: string | null
+          order_sequence: number
+          order_status: string
+          payment_method: string
+          payment_status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          id?: string
+          items: Json
+          order_number?: string | null
+          order_sequence?: never
+          order_status?: string
+          payment_method?: string
+          payment_status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_address?: string
+          id?: string
+          items?: Json
+          order_number?: string | null
+          order_sequence?: never
+          order_status?: string
+          payment_method?: string
+          payment_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      product_launch_notifications: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          product_handle: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          product_handle: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          product_handle?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
