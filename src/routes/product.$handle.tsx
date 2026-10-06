@@ -21,6 +21,9 @@ import { useCartStore } from "@/stores/cartStore";
 import { fetchProductByHandle, fetchProducts, formatPrice } from "@/lib/shopify";
 import { useRecentlyViewedStore } from "@/stores/recentlyViewedStore";
 import { useWishlistStore } from "@/stores/wishlistStore";
+import { DenimLaunchPage } from "@/components/DenimLaunchPage";
+import { DENIM_HANDLE } from "@/lib/denim-launch";
+import { isComingSoon } from "@/lib/product";
 
 type Product = NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 
@@ -51,7 +54,7 @@ export const Route = createFileRoute("/product/$handle")({
         { property: "og:description", content: desc },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
-        ...(image
+        ...(image?.startsWith("https://")
           ? [
               { property: "og:image", content: image },
               { name: "twitter:image", content: image },
@@ -72,7 +75,7 @@ export const Route = createFileRoute("/product/$handle")({
               "@type": "Offer",
               priceCurrency: "NGN",
               price: loaderData.priceRange.minVariantPrice.amount,
-              availability: "https://schema.org/InStock",
+              availability: isComingSoon({ node: loaderData }) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
             },
           }),
         },
@@ -294,6 +297,8 @@ function ProductPage() {
     t.toLowerCase().replace(/-/g, " ").includes("coming soon"),
   );
   const soldOut = selectedVariant?.availableForSale === false;
+
+  if (product.handle === DENIM_HANDLE) return <DenimLaunchPage product={product} />;
 
   return (
     <div className="flex flex-col">

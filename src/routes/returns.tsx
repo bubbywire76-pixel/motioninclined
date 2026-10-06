@@ -11,6 +11,8 @@ export const Route = createFileRoute("/returns")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: "Return Policy — Motion Inclined" },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (
