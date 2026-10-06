@@ -8,6 +8,7 @@ import {
   fetchCart,
   type ShopifyProduct,
 } from "@/lib/shopify";
+import { isComingSoon } from "@/lib/product";
 
 export interface CartItem {
   lineId: string | null;
@@ -127,6 +128,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       addItem: async (item) => {
+        if (isComingSoon(item.product)) return;
         const { items, cartId, clearCart } = get();
         const existingItem = items.find((i) => i.variantId === item.variantId);
 

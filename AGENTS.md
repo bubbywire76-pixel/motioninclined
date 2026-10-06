@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Keep AI Gateway calls and signed checkout-review validation in `*.server.ts` helpers invoked by `*.functions.ts` server functions, so secrets and approvals remain server-side.
+- Store denim launch subscriptions through a validated public server function and a server-only helper; keep subscriber reads private and duplicate submissions idempotent.
+- Render the signature denim launch with a dedicated product view using the shared Shopify loader, so unreleased-product copy cannot inherit purchasable-product claims.
