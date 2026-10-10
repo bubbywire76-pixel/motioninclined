@@ -13,6 +13,8 @@
 
 ## Nigerian checkout
 
+- [ ] Enable direct Moniepoint bank-transfer checkout with server-priced orders, unique narration, copy action, pending-only confirmation, and end-to-end verification.
+
 - [x] Add secure Paystack NGN payment initialization and verification.
 - [x] Add buyer contact and delivery details to the cart checkout.
 - [x] Review checkout delivery details with AI Gateway before payment and let shoppers correct issues.
