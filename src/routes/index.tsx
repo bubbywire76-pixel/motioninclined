@@ -77,6 +77,13 @@ function Index() {
 
       <TrustBar />
 
+      <section className="border-b border-border px-5 py-12 sm:px-10">
+        <div className="mx-auto flex max-w-[1600px] flex-col justify-between gap-6 sm:flex-row sm:items-center">
+          <div><p className="eyebrow">The next Motion · Coming soon</p><h2 className="display-hd mt-4 text-3xl sm:text-4xl">Motion Signature Denim</h2><p className="mt-3 text-sm text-muted-foreground">₦150,000 · Launch date to be announced</p></div>
+          <Link to="/drop" className="link-underline self-start text-[10px] uppercase sm:self-auto">Explore the drop</Link>
+        </div>
+      </section>
+
       {/* Featured collection */}
       <section className="mx-auto w-full max-w-[1600px] px-5 py-32 sm:px-10 sm:py-48" id="shop">
         <Reveal className="mb-20 flex flex-col gap-8 sm:mb-32 sm:flex-row sm:items-end sm:justify-between">
