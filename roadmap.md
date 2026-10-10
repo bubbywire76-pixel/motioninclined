@@ -2,8 +2,8 @@
 
 ## Catalog update
 
-- [ ] Add a shareable Motion Signature Denim drop announcement with official imagery, details, and Notify Me; leave the date unannounced until supplied.
-- [ ] Update all Pray Tee variants to ₦40,000, Believe Tee variants to ₦45,000, and IN MOTION TEE variants to ₦55,000 in Shopify and verify the storefront.
+- [x] Add a shareable Motion Signature Denim drop announcement with official imagery, details, and Notify Me; leave the date unannounced until supplied.
+- [x] Update all Pray Tee variants to ₦40,000, Believe Tee variants to ₦45,000, and IN MOTION TEE variants to ₦55,000 in Shopify and verify the storefront.
 
 - [x] Create Motion Signature Denim in Shopify with the official image, ₦150,000 price, Coming Soon purchase protection, and stored Notify Me emails; verify the shopper flow.
 
