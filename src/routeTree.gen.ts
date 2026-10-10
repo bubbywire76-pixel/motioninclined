@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as CollectionsRouteImport } from './routes/collections'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DropRouteImport } from './routes/drop'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -48,6 +49,11 @@ const CollectionsRoute = CollectionsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DropRoute = DropRouteImport.update({
+  id: '/drop',
+  path: '/drop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/collections': typeof CollectionsRoute
   '/contact': typeof ContactRoute
+  '/drop': typeof DropRoute
   '/faq': typeof FaqRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/collections': typeof CollectionsRoute
   '/contact': typeof ContactRoute
+  '/drop': typeof DropRoute
   '/faq': typeof FaqRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/collections': typeof CollectionsRoute
   '/contact': typeof ContactRoute
+  '/drop': typeof DropRoute
   '/faq': typeof FaqRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/collections'
     | '/contact'
+    | '/drop'
     | '/faq'
     | '/order-confirmed'
     | '/privacy'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/collections'
     | '/contact'
+    | '/drop'
     | '/faq'
     | '/order-confirmed'
     | '/privacy'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/collections'
     | '/contact'
+    | '/drop'
     | '/faq'
     | '/order-confirmed'
     | '/privacy'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   CollectionsRoute: typeof CollectionsRoute
   ContactRoute: typeof ContactRoute
+  DropRoute: typeof DropRoute
   FaqRoute: typeof FaqRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -260,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drop': {
+      id: '/drop'
+      path: '/drop'
+      fullPath: '/drop'
+      preLoaderRoute: typeof DropRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -341,6 +361,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   CollectionsRoute: CollectionsRoute,
   ContactRoute: ContactRoute,
+  DropRoute: DropRoute,
   FaqRoute: FaqRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
