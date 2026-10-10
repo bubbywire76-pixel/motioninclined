@@ -8,7 +8,7 @@ import { DENIM_DETAILS, DENIM_HANDLE } from "@/lib/denim-launch";
 import { subscribeToDenimLaunch } from "@/lib/denim-launch.functions";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 
-export function DenimLaunchPage({ product }: { product: ShopifyProduct["node"] }) {
+export function DenimLaunchPage({ product, announcement = false }: { product: ShopifyProduct["node"]; announcement?: boolean }) {
   const subscribe = useServerFn(subscribeToDenimLaunch);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -31,9 +31,10 @@ export function DenimLaunchPage({ product }: { product: ShopifyProduct["node"] }
           </Button>
         </div>
         <div className="lg:sticky lg:top-32">
-          <p className="eyebrow">The next Motion</p>
+           <p className="eyebrow">{announcement ? "The next Motion — Drop announcement" : "The next Motion"}</p>
           <h1 className="display-hd mt-6 break-words text-4xl sm:text-5xl">{product.title}</h1>
           <p className="mt-7 text-xl">{formatPrice(product.priceRange.minVariantPrice.amount)}</p>
+           {announcement && <div className="mt-8 border-y border-border py-6"><p className="text-[10px] uppercase text-muted-foreground">Launch date</p><p className="mt-3 text-2xl font-serif-display">To be announced</p></div>}
           <Button disabled variant="outline" className="mt-8 h-12 w-full rounded-none text-[10px] uppercase disabled:opacity-100">Coming soon</Button>
           <div className="mt-8 space-y-5 text-sm leading-loose text-muted-foreground">
             <p>A timeless statement piece engineered for those who move with intention.</p>
