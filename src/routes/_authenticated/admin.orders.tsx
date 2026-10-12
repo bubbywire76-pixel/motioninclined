@@ -44,7 +44,7 @@ function AdminOrders() {
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/auth", search: { redirect: "/admin/orders" }, replace: true });
   }
 
   const orders = (data?.orders ?? []).filter((o) => filter === "All" || o.payment_status === filter);
