@@ -241,3 +241,7 @@ export const createShopifyOrderForPayment = createServerFn({ method: "POST" })
       return { ok: false as const, error: error instanceof Error ? error.message : "We could not finish the store order." };
     }
   });
+// Paystack needs its secret key plus the AI review signing key; hide the option when either is missing.
+export const getPaystackAvailability = createServerFn({ method: "GET" }).handler(async () => ({
+  available: Boolean(process.env["PAYSTACK_SECRET_KEY"] && process.env["LOVABLE_API_KEY"]),
+}));
