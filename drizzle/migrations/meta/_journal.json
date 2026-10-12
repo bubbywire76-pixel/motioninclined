@@ -15,6 +15,13 @@
       "when": 1791231303781,
       "tag": "0001_create_transfer_orders_and_denim_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791808407204,
+      "tag": "0002_admin_roles_and_transfer_verification",
+      "breakpoints": true
     }
   ]
 }
