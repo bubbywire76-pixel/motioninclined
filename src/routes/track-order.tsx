@@ -13,6 +13,8 @@ export const Route = createFileRoute("/track-order")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: "Order Tracking — Motion Inclined" },
       { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: TrackOrderPage,

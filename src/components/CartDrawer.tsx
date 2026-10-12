@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingBag, Minus, Plus, X, Loader2, Lock, Truck, RotateCcw, ArrowLeft, Copy, Check, Landmark, CreditCard } from "lucide-react";
+import { ShoppingBag, Minus, Plus, X, Loader2, Lock, Truck, RotateCcw, ArrowLeft, Copy, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BANK_ACCOUNT, type TransferOrder } from "@/lib/bank-transfer";
+import { prepareBankTransfer, submitBankTransfer } from "@/lib/bank-transfer.functions";
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice } from "@/lib/shopify";
 import { getPaystackAvailability, initializePaystackCheckout } from "@/lib/paystack.functions";
@@ -20,6 +24,11 @@ export function CartDrawer() {
   const [isReservingTransfer, setIsReservingTransfer] = useState(false);
   const [isConfirmingTransfer, setIsConfirmingTransfer] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [checkoutStep, setCheckoutStep] = useState<"cart" | "details" | "transfer" | "pending">("cart");
+  const [transfer, setTransfer] = useState<TransferOrder | null>(null);
+  const [copied, setCopied] = useState(false);
+  const prepareBank = useServerFn(prepareBankTransfer);
+  const submitBank = useServerFn(submitBankTransfer);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isStartingPayment, setIsStartingPayment] = useState(false);
   const [isReviewingDelivery, setIsReviewingDelivery] = useState(false);
@@ -84,6 +93,32 @@ export function CartDrawer() {
   const handleCheckout = () => {
     setCheckoutError(null);
     setCheckoutStep("details");
+  };
+
+  const handleBankTransfer = async () => {
+    if (!isReviewCurrent || !reviewToken) return;
+    setCheckoutError(null);
+    setIsStartingPayment(true);
+    try {
+      const order = await prepareBank({ data: { ...details, reviewToken, items: items.map(item => ({ variantId: item.variantId, quantity: item.quantity })) } });
+      setTransfer(order);
+      setCheckoutStep("transfer");
+    } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Transfer checkout could not be started."); }
+    finally { setIsStartingPayment(false); }
+  };
+
+  const handleTransferSubmitted = async () => {
+    if (!transfer) return;
+    setCheckoutError(null);
+    setIsStartingPayment(true);
+    try {
+      await submitBank({ data: { id: transfer.id, token: transfer.token } });
+      setCheckoutStep("pending");
+      // Only remove the lines submitted with this transfer; preserve later cart additions.
+      const submitted = useCartStore.getState().items;
+      for (const item of submitted) await removeItem(item.variantId);
+    } catch (error) { setCheckoutError(error instanceof Error ? error.message : "Transfer submission failed. Please try again."); }
+    finally { setIsStartingPayment(false); }
   };
 
   const handleDetailsChange = (field: keyof typeof details, value: string) => {
@@ -241,6 +276,7 @@ export function CartDrawer() {
              <h2 className="text-[10px] uppercase tracking-[0.35em]">
                {{ cart: "Your bag", details: "Delivery details", transfer: "Bank transfer", sent: "Order received" }[checkoutStep]}{" "}
                {checkoutStep === "cart" && <span className="text-muted-foreground">({totalItems})</span>}
+               {checkoutStep === "details" ? "Delivery details" : checkoutStep === "transfer" ? "Bank transfer" : checkoutStep === "pending" ? "Payment verification" : "Your bag"} {checkoutStep === "cart" && <span className="text-muted-foreground">({totalItems})</span>}
              </h2>
            </div>
            <button aria-label="Close cart" onClick={() => handleOpenChange(false)}>
@@ -355,6 +391,30 @@ export function CartDrawer() {
                <div className="flex-1 overflow-y-auto px-6 py-6">
                  <p className="text-sm leading-relaxed text-muted-foreground">
                    Pay in naira by direct bank transfer{paystackAvailable ? ", or by card and USSD through Paystack" : ""}. Your order is confirmed once payment is received.
+           {(checkoutStep === "transfer" || checkoutStep === "pending") && transfer ? (
+             <div className="flex-1 overflow-y-auto px-6 py-7">
+               {checkoutStep === "pending" ? <>
+                 <Check className="mb-6 h-6 w-6" />
+                 <h3 className="display-hd text-3xl">Payment verification pending</h3>
+                 <p className="mt-5 text-sm leading-relaxed text-muted-foreground">Thank you. Your transfer details have been submitted. We'll verify your payment and begin processing your order once payment has been confirmed.</p>
+                 <dl className="mt-8 space-y-5 border-y border-border py-6 text-sm"><div><dt className="text-muted-foreground">Order Number</dt><dd className="mt-1">{transfer.orderNumber}</dd></div><div><dt className="text-muted-foreground">Payment Method</dt><dd className="mt-1">Bank Transfer</dd></div><div><dt className="text-muted-foreground">Payment Status</dt><dd className="mt-1">Pending Verification</dd></div><div><dt className="text-muted-foreground">Order Status</dt><dd className="mt-1">Awaiting Payment Verification</dd></div></dl>
+                 <Button variant="outline" className="mt-8 w-full" onClick={() => { setIsOpen(false); setCheckoutStep("cart"); }}>Continue shopping</Button>
+               </> : <>
+                 <p className="text-sm leading-relaxed text-muted-foreground">Make a direct transfer from your local bank or any Nigerian financial institution. Your order will be confirmed once payment has been verified.</p>
+                 <div className="mt-7 border-y border-border py-6"><p className="eyebrow">Order number / Transfer narration</p><p className="mt-3 text-xl">{transfer.orderNumber}</p><p className="mt-6 text-[10px] uppercase text-muted-foreground">Exact order amount</p><p className="mt-2 text-2xl">{formatPrice(transfer.amount)}</p></div>
+                 <dl className="mt-7 space-y-6"><div><dt className="eyebrow">Account name</dt><dd className="mt-2 text-base">{BANK_ACCOUNT.name}</dd></div><div><dt className="eyebrow">Account number</dt><dd className="mt-2 flex items-center justify-between gap-3"><span className="text-2xl tabular-nums">{BANK_ACCOUNT.number}</span><Button variant="outline" size="icon" aria-label="Copy Account Number" title="Copy Account Number" onClick={async () => { try { await navigator.clipboard.writeText(BANK_ACCOUNT.number); setCopied(true); } catch { setCheckoutError("Copy unavailable. Please copy the account number manually."); } }}><Copy /></Button></dd>{copied && <p role="status" className="mt-2 text-xs text-muted-foreground">Account number copied.</p>}</div><div><dt className="eyebrow">Bank</dt><dd className="mt-2 text-base">{BANK_ACCOUNT.bank}</dd></div></dl>
+                 <p className="mt-7 text-sm leading-relaxed text-muted-foreground">Transfer the exact order amount to the account above using your preferred Nigerian bank or financial institution.</p>
+                 <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Please use your Order Number as the transfer narration/reference.</p>
+                 {checkoutError && <p role="alert" className="mt-5 text-sm text-destructive">{checkoutError}</p>}
+                 <Button onClick={handleTransferSubmitted} disabled={isStartingPayment} className="mt-8 h-12 w-full text-[10px] uppercase">{isStartingPayment ? <Loader2 className="animate-spin" /> : "I've Made the Transfer"}</Button>
+                 <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Submitting does not confirm receipt of payment.</p>
+               </>}
+             </div>
+           ) : checkoutStep === "details" ? (
+              <form onSubmit={(event) => { event.preventDefault(); void handleReviewDetails(); }} className="flex min-h-0 flex-1 flex-col">
+               <div className="flex-1 overflow-y-auto px-6 py-6">
+                 <p className="text-sm leading-relaxed text-muted-foreground">
+                   Choose direct bank transfer or pay securely by card and USSD with Paystack. Bank transfers remain pending until verified.
                  </p>
                  <fieldset className="mt-7">
                    <legend className="mb-3 text-[9px] uppercase tracking-[0.25em] text-muted-foreground">Payment method</legend>
@@ -457,6 +517,7 @@ export function CartDrawer() {
                   <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground">Your delivery information is checked before secure payment.</p>
                   </>
                   )}
+                  <Button type="button" variant="outline" onClick={handleBankTransfer} disabled={!isReviewCurrent || isReviewingDelivery || isStartingPayment || isLoading || isSyncing} className="mt-4 h-12 w-full rounded-none text-[10px] uppercase">Pay via bank transfer</Button>
                </div>
              </form>
            ) : items.length === 0 ? (

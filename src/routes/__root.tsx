@@ -8,6 +8,7 @@ import {
 
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -40,7 +41,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -93,8 +94,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@merchco" },
       { name: "twitter:title", content: "Motion Inclined — Premium Streetwear" },
       { name: "twitter:description", content: "Shop the latest drops from Motion Inclined Limited-run streetwear, premium fabrics, and designs that speak for themselves." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/85c3G1XZJvfOOOA321c2rSMiXwd2/social-images/social-1784045434119-WhatsApp_Image_2026-05-01_at_9.52.15_AM.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/85c3G1XZJvfOOOA321c2rSMiXwd2/social-images/social-1784045434119-WhatsApp_Image_2026-05-01_at_9.52.15_AM.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

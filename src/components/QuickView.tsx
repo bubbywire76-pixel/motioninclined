@@ -4,7 +4,8 @@ import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
-import { sizeOption } from "@/lib/product";
+import { isComingSoon, sizeOption } from "@/lib/product";
+import { Button } from "@/components/ui/button";
 
 interface QuickViewProps {
   product: ShopifyProduct;
@@ -15,6 +16,7 @@ interface QuickViewProps {
 export function QuickView({ product, open, onOpenChange }: QuickViewProps) {
   const addItem = useCartStore((s) => s.addItem);
   const sizes = sizeOption(product);
+  const comingSoon = isComingSoon(product);
   const [size, setSize] = useState<string | null>(sizes?.values[0] ?? null);
   const [adding, setAdding] = useState(false);
 
@@ -43,7 +45,7 @@ export function QuickView({ product, open, onOpenChange }: QuickViewProps) {
     : product.node.variants.edges[0]?.node;
 
   const handleAdd = async () => {
-    if (!variant) return;
+    if (!variant || comingSoon) return;
     setAdding(true);
     try {
       await addItem({
@@ -128,13 +130,13 @@ export function QuickView({ product, open, onOpenChange }: QuickViewProps) {
           )}
 
           <div className="flex flex-col gap-3">
-            <button
+            <Button
               onClick={handleAdd}
-              disabled={adding || !variant}
+              disabled={comingSoon || adding || !variant}
               className="flex w-full items-center justify-center rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-50"
             >
-              {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to Motion"}
-            </button>
+              {comingSoon ? "Coming soon" : adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add to Motion"}
+            </Button>
             <Link
               to="/product/$handle"
               params={{ handle: product.node.handle }}

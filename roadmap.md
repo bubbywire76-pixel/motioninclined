@@ -2,11 +2,18 @@
 
 ## Catalog update
 
+- [x] Add a shareable Motion Signature Denim drop announcement with official imagery, details, and Notify Me; leave the date unannounced until supplied.
+- [x] Update all Pray Tee variants to ₦40,000, Believe Tee variants to ₦45,000, and IN MOTION TEE variants to ₦55,000 in Shopify and verify the storefront.
+
+- [x] Create Motion Signature Denim in Shopify with the official image, ₦150,000 price, Coming Soon purchase protection, and stored Notify Me emails; verify the shopper flow.
+
 - [x] Add **MOTION BODY HUG™** as an independent limited-quantity product at ₦75,000 with its own gallery, sizing, product page, and Add to Motion flow.
 - [x] Add **CULTURE OF AMBITION ZIP JACKET** as an independent limited-quantity product at ₦150,000 with its own gallery, sizing, product page, and Add to Motion flow.
 - Preserve the existing Motion Inclined layout, navigation, typography, color system, cart, checkout, and existing catalog.
 
 ## Nigerian checkout
+
+- [ ] Enable direct Moniepoint bank-transfer checkout with server-priced orders, unique narration, copy action, pending-only confirmation, and end-to-end verification.
 
 - [x] Add secure Paystack NGN payment initialization and verification.
 - [x] Add buyer contact and delivery details to the cart checkout.
