@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ShoppingBag, Minus, Plus, X, Loader2, Lock, Truck, RotateCcw, ArrowLeft, Copy, Check, Landmark, CreditCard } from "lucide-react";
 import { ShoppingBag, Minus, Plus, X, Loader2, Lock, Truck, RotateCcw, ArrowLeft, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNT, type TransferOrder } from "@/lib/bank-transfer";
 import { prepareBankTransfer, submitBankTransfer } from "@/lib/bank-transfer.functions";
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice } from "@/lib/shopify";
-import { initializePaystackCheckout } from "@/lib/paystack.functions";
+import { getPaystackAvailability, initializePaystackCheckout } from "@/lib/paystack.functions";
+import { confirmBankTransferSent, startBankTransferOrder } from "@/lib/bank-transfer.functions";
+import { BANK_TRANSFER_ACCOUNT, ORDERS_WHATSAPP_NUMBER } from "@/lib/bank-transfer";
 import { reviewCheckoutDelivery } from "@/lib/checkout-review.functions";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -14,6 +17,13 @@ const FREE_SHIPPING_THRESHOLD = 100000;
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState<"cart" | "details" | "transfer" | "sent">("cart");
+  const [paymentMethod, setPaymentMethod] = useState<"transfer" | "paystack">("transfer");
+  const [paystackAvailable, setPaystackAvailable] = useState(false);
+  const [transferOrder, setTransferOrder] = useState<{ reference: string; total: number; email: string } | null>(null);
+  const [isReservingTransfer, setIsReservingTransfer] = useState(false);
+  const [isConfirmingTransfer, setIsConfirmingTransfer] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [checkoutStep, setCheckoutStep] = useState<"cart" | "details" | "transfer" | "pending">("cart");
   const [transfer, setTransfer] = useState<TransferOrder | null>(null);
   const [copied, setCopied] = useState(false);
@@ -29,12 +39,16 @@ export function CartDrawer() {
   const [details, setDetails] = useState({ name: "", email: "", phone: "+234", address: "", city: "", state: "" });
   const startPaystackCheckout = useServerFn(initializePaystackCheckout);
   const reviewCheckout = useServerFn(reviewCheckoutDelivery);
+  const checkPaystack = useServerFn(getPaystackAvailability);
+  const reserveTransfer = useServerFn(startBankTransferOrder);
+  const reportTransfer = useServerFn(confirmBankTransferSent);
   const {
     items,
     isLoading,
     isSyncing,
     updateQuantity,
     removeItem,
+    clearCart,
     syncCart,
     snapshotPendingOrder,
     markCheckoutOpened,
@@ -59,6 +73,15 @@ export function CartDrawer() {
   useEffect(() => {
     if (isOpen) syncCart();
   }, [isOpen, syncCart]);
+
+  useEffect(() => {
+    if (!isOpen || checkoutStep !== "details") return;
+    checkPaystack()
+      .then((result) => setPaystackAvailable(result.available))
+      .catch(() => setPaystackAvailable(false));
+  }, [isOpen, checkoutStep, checkPaystack]);
+
+  const activeMethod = paystackAvailable ? paymentMethod : "transfer";
 
   useEffect(() => {
     setReviewError(null);
@@ -131,6 +154,72 @@ export function CartDrawer() {
     }
   };
 
+  const handleReserveTransfer = async () => {
+    setCheckoutError(null);
+    setIsReservingTransfer(true);
+    try {
+      const result = await reserveTransfer({
+        data: {
+          ...details,
+          items: items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+        },
+      });
+      if (!result.ok) {
+        setCheckoutError(result.error);
+        return;
+      }
+      setTransferOrder({ reference: result.reference, total: result.total, email: details.email });
+      setCheckoutStep("transfer");
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "We could not reserve your order. Please try again.");
+    } finally {
+      setIsReservingTransfer(false);
+    }
+  };
+
+  const handleTransferSent = async () => {
+    if (!transferOrder) return;
+    setCheckoutError(null);
+    setIsConfirmingTransfer(true);
+    try {
+      const result = await reportTransfer({ data: { reference: transferOrder.reference, email: transferOrder.email } });
+      if (!result.ok) {
+        setCheckoutError(result.error);
+        return;
+      }
+      clearCart();
+      setCheckoutStep("sent");
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "We could not update your order.");
+    } finally {
+      setIsConfirmingTransfer(false);
+    }
+  };
+
+  const copyValue = async (field: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField((current) => (current === field ? null : current)), 1800);
+    } catch {
+      setCopiedField(null);
+    }
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open && checkoutStep === "sent") {
+      setCheckoutStep("cart");
+      setTransferOrder(null);
+    }
+  };
+
+  const whatsappReceiptUrl = transferOrder
+    ? `https://wa.me/${ORDERS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+        `Hello Motion Inclined, I have paid ${formatPrice(transferOrder.total)} by bank transfer for order ${transferOrder.reference}. Here is my receipt:`,
+      )}`
+    : `https://wa.me/${ORDERS_WHATSAPP_NUMBER}`;
+
   const handlePaymentSubmit = async () => {
     if (!reviewToken || reviewedCheckoutKey !== checkoutReviewKey) {
       setCheckoutError("Review your delivery details again before payment.");
@@ -161,7 +250,7 @@ export function CartDrawer() {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>
         <button
           aria-label={`Open cart, ${totalItems} item${totalItems === 1 ? "" : "s"}`}
@@ -176,21 +265,26 @@ export function CartDrawer() {
       <SheetContent className="flex w-full flex-col gap-0 border-l border-border bg-background p-0 sm:max-w-md [&>button]:hidden">
          <div className="flex items-center justify-between border-b border-border px-6 py-5">
            <div className="flex items-center gap-3">
-             {checkoutStep === "details" && (
-               <button aria-label="Back to bag" onClick={() => setCheckoutStep("cart")}>
+             {(checkoutStep === "details" || checkoutStep === "transfer") && (
+               <button
+                 aria-label={checkoutStep === "transfer" ? "Back to delivery details" : "Back to bag"}
+                 onClick={() => { setCheckoutError(null); setCheckoutStep(checkoutStep === "transfer" ? "details" : "cart"); }}
+               >
                  <ArrowLeft className="h-4 w-4" strokeWidth={1.3} />
                </button>
              )}
              <h2 className="text-[10px] uppercase tracking-[0.35em]">
+               {{ cart: "Your bag", details: "Delivery details", transfer: "Bank transfer", sent: "Order received" }[checkoutStep]}{" "}
+               {checkoutStep === "cart" && <span className="text-muted-foreground">({totalItems})</span>}
                {checkoutStep === "details" ? "Delivery details" : checkoutStep === "transfer" ? "Bank transfer" : checkoutStep === "pending" ? "Payment verification" : "Your bag"} {checkoutStep === "cart" && <span className="text-muted-foreground">({totalItems})</span>}
              </h2>
            </div>
-           <button aria-label="Close cart" onClick={() => setIsOpen(false)}>
+           <button aria-label="Close cart" onClick={() => handleOpenChange(false)}>
              <X className="h-4 w-4" strokeWidth={1.3} />
            </button>
          </div>
 
-        {items.length > 0 && (
+        {items.length > 0 && (checkoutStep === "cart" || checkoutStep === "details") && (
           <div className="border-b border-border px-6 py-4">
             <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
               {remaining > 0
@@ -207,6 +301,96 @@ export function CartDrawer() {
         )}
 
          <div className="flex min-h-0 flex-1 flex-col">
+           {checkoutStep === "sent" ? (
+             <div className="flex flex-1 flex-col items-center justify-center gap-6 px-8 text-center">
+               <span className="flex h-12 w-12 items-center justify-center rounded-full border border-foreground">
+                 <Check className="h-5 w-5" strokeWidth={1.3} />
+               </span>
+               <div>
+                 <p className="eyebrow">Thank you</p>
+                 <h3 className="display-hd mt-4 text-3xl">Transfer <span className="font-serif-display font-light italic">noted.</span></h3>
+               </div>
+               <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
+                 Order <span className="text-foreground">{transferOrder?.reference}</span> is with our team. We confirm the payment,
+                 then dispatch within 48 hours. Sending your receipt on WhatsApp speeds this up.
+               </p>
+               <a
+                 href={whatsappReceiptUrl}
+                 target="_blank"
+                 rel="noreferrer"
+                 className="w-full rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85"
+               >
+                 Send receipt on WhatsApp
+               </a>
+               <button
+                 onClick={() => handleOpenChange(false)}
+                 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground underline-offset-8 hover:underline"
+               >
+                 Continue shopping
+               </button>
+             </div>
+           ) : checkoutStep === "transfer" && transferOrder ? (
+             <div className="flex min-h-0 flex-1 flex-col">
+               <div className="flex-1 overflow-y-auto px-6 py-6">
+                 <p className="text-sm leading-relaxed text-muted-foreground">
+                   Transfer the exact amount below from any Nigerian bank app. Use your order reference as the narration so we can match your payment.
+                 </p>
+                 <div className="mt-7 rounded-2xl border border-border bg-card p-6">
+                   <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">Amount to transfer</p>
+                   <p className="mt-2 text-3xl tabular-nums tracking-tight">{formatPrice(transferOrder.total)}</p>
+                   <dl className="mt-6 divide-y divide-border border-t border-border">
+                     {([
+                       ["Bank", BANK_TRANSFER_ACCOUNT.bankName],
+                       ["Account number", BANK_TRANSFER_ACCOUNT.accountNumber],
+                       ["Account name", BANK_TRANSFER_ACCOUNT.accountName],
+                       ["Narration / reference", transferOrder.reference],
+                     ] as const).map(([label, value]) => (
+                       <div key={label} className="flex items-center justify-between gap-4 py-4">
+                         <div className="min-w-0">
+                           <dt className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground">{label}</dt>
+                           <dd className="mt-1 truncate text-sm tabular-nums">{value}</dd>
+                         </div>
+                         <button
+                           type="button"
+                           onClick={() => void copyValue(label, value)}
+                           aria-label={`Copy ${label.toLowerCase()}`}
+                           className="flex flex-none items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] uppercase tracking-[0.2em] transition-colors hover:border-foreground"
+                         >
+                           {copiedField === label ? <Check className="h-3 w-3" strokeWidth={1.5} /> : <Copy className="h-3 w-3" strokeWidth={1.5} />}
+                           {copiedField === label ? "Copied" : "Copy"}
+                         </button>
+                       </div>
+                     ))}
+                   </dl>
+                 </div>
+                 <p className="mt-5 text-[11px] leading-relaxed text-muted-foreground">
+                   Your pieces are reserved under this reference. Once you have sent the money, tap the button below — our team confirms every transfer before dispatch.
+                 </p>
+                 {checkoutError && <p role="alert" className="mt-5 text-sm text-destructive">{checkoutError}</p>}
+               </div>
+               <div className="border-t border-border px-6 py-6">
+                 <button
+                   type="button"
+                   onClick={handleTransferSent}
+                   disabled={isConfirmingTransfer}
+                   className="flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-50"
+                 >
+                   {isConfirmingTransfer ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "I've sent the transfer"}
+                 </button>
+                 <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground">Need help? WhatsApp +234 704 360 2465.</p>
+               </div>
+             </div>
+           ) : checkoutStep === "details" ? (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void (activeMethod === "transfer" ? handleReserveTransfer() : handleReviewDetails());
+                }}
+                className="flex min-h-0 flex-1 flex-col"
+              >
+               <div className="flex-1 overflow-y-auto px-6 py-6">
+                 <p className="text-sm leading-relaxed text-muted-foreground">
+                   Pay in naira by direct bank transfer{paystackAvailable ? ", or by card and USSD through Paystack" : ""}. Your order is confirmed once payment is received.
            {(checkoutStep === "transfer" || checkoutStep === "pending") && transfer ? (
              <div className="flex-1 overflow-y-auto px-6 py-7">
                {checkoutStep === "pending" ? <>
@@ -232,6 +416,35 @@ export function CartDrawer() {
                  <p className="text-sm leading-relaxed text-muted-foreground">
                    Choose direct bank transfer or pay securely by card and USSD with Paystack. Bank transfers remain pending until verified.
                  </p>
+                 <fieldset className="mt-7">
+                   <legend className="mb-3 text-[9px] uppercase tracking-[0.25em] text-muted-foreground">Payment method</legend>
+                   <div className="grid gap-3">
+                     {([
+                       ["transfer", Landmark, "Bank transfer", `${BANK_TRANSFER_ACCOUNT.bankName} · instant confirmation by our team`],
+                       ...(paystackAvailable ? [["paystack", CreditCard, "Card, USSD or Paystack transfer", "Secure hosted checkout by Paystack"] as const] : []),
+                     ] as const).map(([value, Icon, label, hint]) => (
+                       <label
+                         key={value}
+                         className={`flex cursor-pointer items-start gap-4 rounded-2xl border px-4 py-4 transition-colors ${activeMethod === value ? "border-foreground bg-card" : "border-border hover:border-foreground/40"}`}
+                       >
+                         <input
+                           type="radio"
+                           name="payment-method"
+                           value={value}
+                           checked={activeMethod === value}
+                           onChange={() => { setCheckoutError(null); setPaymentMethod(value); }}
+                           className="sr-only"
+                         />
+                         <Icon className="mt-0.5 h-4 w-4 flex-none" strokeWidth={1.3} />
+                         <span className="min-w-0 flex-1">
+                           <span className="block text-[11px] uppercase tracking-[0.2em]">{label}</span>
+                           <span className="mt-1 block text-[11px] text-muted-foreground">{hint}</span>
+                         </span>
+                         <span className={`mt-1 h-3 w-3 flex-none rounded-full border ${activeMethod === value ? "border-foreground bg-foreground" : "border-border"}`} />
+                       </label>
+                     ))}
+                   </div>
+                 </fieldset>
                  <div className="mt-7 space-y-4">
                    {([
                      ["name", "Full name", "Ada Lovelace", "text"],
@@ -273,6 +486,19 @@ export function CartDrawer() {
                    <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Total</span>
                    <span className="text-[15px] tabular-nums">{formatPrice(totalPrice)}</span>
                  </div>
+                  {activeMethod === "transfer" ? (
+                  <>
+                  <button
+                    type="submit"
+                    disabled={isReservingTransfer || isLoading || isSyncing}
+                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-[10px] uppercase tracking-[0.3em] text-background transition-opacity hover:opacity-85 disabled:opacity-50"
+                  >
+                    {isReservingTransfer ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Landmark className="h-3 w-3" strokeWidth={1.5} /> Continue to bank transfer</>}
+                  </button>
+                  <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground">Your total is confirmed against live prices before we show the account details.</p>
+                  </>
+                  ) : (
+                  <>
                   <button
                     type="submit"
                     disabled={isReviewingDelivery || isStartingPayment || isLoading || isSyncing}
@@ -289,6 +515,8 @@ export function CartDrawer() {
                     {isStartingPayment ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Lock className="h-3 w-3" strokeWidth={1.5} /> Pay securely with Paystack</>}
                   </button>
                   <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-foreground">Your delivery information is checked before secure payment.</p>
+                  </>
+                  )}
                   <Button type="button" variant="outline" onClick={handleBankTransfer} disabled={!isReviewCurrent || isReviewingDelivery || isStartingPayment || isLoading || isSyncing} className="mt-4 h-12 w-full rounded-none text-[10px] uppercase">Pay via bank transfer</Button>
                </div>
              </form>

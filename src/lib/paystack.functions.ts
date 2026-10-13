@@ -2,14 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { checkCheckoutReviewToken } from "./checkout-review.server";
+import { cartItemSchema, priceCart } from "./cart-pricing.server";
 
 const domain = "my-merch-shop-hsh8y.myshopify.com";
 const apiVersion = "2025-07";
-
-const cartItemSchema = z.object({
-  variantId: z.string().regex(/^gid:\/\/shopify\/ProductVariant\/\d+$/),
-  quantity: z.number().int().min(1).max(10),
-});
 
 const checkoutSchema = z.object({
   email: z.string().trim().email().max(254),
@@ -34,52 +30,6 @@ const paymentMetadataSchema = z.object({
     quantity: z.number().int().min(1).max(10),
   })).min(1).max(25),
 });
-
-type ShopifyNode = {
-  id: string;
-  title: string;
-  price: { amount: string; currencyCode: string };
-  product: { title: string };
-};
-
-type PricedLine = z.infer<typeof cartItemSchema> & {
-  name: string;
-  size: string;
-  unitAmount: number;
-};
-
-async function priceCart(items: Array<z.infer<typeof cartItemSchema>>) {
-  const token = process.env["SHOPIFY_STOREFRONT_ACCESS_TOKEN"];
-  if (!token) throw new Error("Store checkout is temporarily unavailable.");
-
-  const response = await fetch(`https://${domain}/api/${apiVersion}/graphql.json`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Shopify-Storefront-Access-Token": token },
-    body: JSON.stringify({
-      query: `query PriceCart($ids: [ID!]!) {
-        nodes(ids: $ids) {
-          ... on ProductVariant { id title price { amount currencyCode } product { title } }
-        }
-      }`,
-      variables: { ids: items.map((item) => item.variantId) },
-    }),
-  });
-  if (!response.ok) throw new Error("Unable to confirm product prices.");
-  const body = await response.json() as { data?: { nodes?: Array<ShopifyNode | null> }; errors?: unknown };
-  if (body.errors || !body.data?.nodes) throw new Error("Unable to confirm product prices.");
-
-  const variants = new Map(
-    body.data.nodes.filter((node): node is ShopifyNode => node !== null).map((node) => [node.id, node]),
-  );
-  const lines: PricedLine[] = items.map((item) => {
-    const variant = variants.get(item.variantId);
-    if (!variant || variant.price.currencyCode !== "NGN") throw new Error("A cart item is unavailable in NGN.");
-    const unitAmount = Number(variant.price.amount);
-    if (!Number.isFinite(unitAmount) || unitAmount <= 0) throw new Error("A cart item has an invalid price.");
-    return { ...item, name: variant.product.title, size: variant.title, unitAmount };
-  });
-  return { lines, total: lines.reduce((sum, line) => sum + line.unitAmount * line.quantity, 0) };
-}
 
 async function verifyPaystackReference(reference: string) {
   const secretKey = process.env["PAYSTACK_SECRET_KEY"];
@@ -291,3 +241,7 @@ export const createShopifyOrderForPayment = createServerFn({ method: "POST" })
       return { ok: false as const, error: error instanceof Error ? error.message : "We could not finish the store order." };
     }
   });
+// Paystack needs its secret key plus the AI review signing key; hide the option when either is missing.
+export const getPaystackAvailability = createServerFn({ method: "GET" }).handler(async () => ({
+  available: Boolean(process.env["PAYSTACK_SECRET_KEY"] && process.env["LOVABLE_API_KEY"]),
+}));
